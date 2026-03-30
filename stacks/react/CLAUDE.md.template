@@ -1,0 +1,53 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+npm run dev              # Dev server (port 3000)
+npm run build            # Production build
+npm run lint             # ESLint + Prettier
+npm run test             # Vitest / Jest
+npm run test:e2e         # [CUSTOMIZE] Playwright / Cypress
+npm run storybook        # [CUSTOMIZE] Component docs
+```
+
+## Architecture
+
+- **Framework**: Next.js 14+ (App Router) with TypeScript
+- **Styling**: [CUSTOMIZE] Tailwind CSS / CSS Modules / styled-components
+- **State**: [CUSTOMIZE] React Query + Zustand / Redux Toolkit
+- **Testing**: [CUSTOMIZE] Vitest + Testing Library / Jest
+- **Components**: [CUSTOMIZE] shadcn/ui / Radix / custom
+
+## Project Structure
+
+```
+[CUSTOMIZE]
+src/
+├── app/              # Next.js App Router pages + layouts
+├── components/
+│   ├── ui/           # Design system primitives
+│   └── features/     # Feature-specific components
+├── hooks/            # Custom React hooks
+├── lib/              # API client, utilities, config
+├── types/            # Shared TypeScript types
+└── styles/           # Global styles, theme
+```
+
+## Conventions
+
+- Functional components only, no class components
+- Named exports for components: `export function Button()`
+- Props interface co-located: `interface ButtonProps {}`
+- Server components by default, `'use client'` only when needed
+- Custom hooks prefixed with `use`: `useAuth`, `useDebounce`
+- Components handle loading, error, and empty states
+
+## Important
+
+- [CUSTOMIZE] Which components are server vs client
+- [CUSTOMIZE] Authentication approach
+- Strict TypeScript: no `any`, no unused imports
+- Accessibility: semantic HTML, ARIA labels, keyboard navigation

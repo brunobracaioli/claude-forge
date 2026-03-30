@@ -1,0 +1,59 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+# [CUSTOMIZE] Adjust for your setup (venv, poetry, uv, etc.)
+python -m pytest                    # Run all tests
+python -m pytest tests/unit         # Unit tests only
+python -m pytest -x -v              # Stop on first failure, verbose
+python -m mypy src/                 # Type checking
+python -m ruff check src/           # Linting
+python -m ruff format src/          # Formatting
+python -m alembic upgrade head      # [CUSTOMIZE] Migrations
+python -m uvicorn app.main:app      # [CUSTOMIZE] Dev server
+```
+
+## Architecture
+
+- **Language**: Python 3.11+
+- **Framework**: [CUSTOMIZE] Flask / FastAPI / Django
+- **Database**: [CUSTOMIZE] PostgreSQL via SQLAlchemy / Django ORM
+- **Testing**: pytest
+- **Linter/Formatter**: Ruff (or Black + isort)
+- **Type checker**: mypy (strict mode)
+- **Package manager**: [CUSTOMIZE] pip / poetry / uv
+
+## Project Structure
+
+```
+[CUSTOMIZE]
+src/
+├── app/
+│   ├── routes/        # API endpoints
+│   ├── services/      # Business logic
+│   ├── models/        # Database models
+│   ├── schemas/       # Pydantic schemas
+│   └── lib/           # Utilities
+├── migrations/        # Alembic
+└── tests/
+    ├── unit/
+    ├── integration/
+    └── conftest.py
+```
+
+## Conventions
+
+- Type hints on ALL function signatures (params + return)
+- Pydantic for data validation and serialization
+- No bare `except:` — always catch specific exceptions
+- Use `logging` module, never `print()`
+- snake_case for everything except class names (PascalCase)
+
+## Important
+
+- [CUSTOMIZE] Virtual env setup instructions
+- [CUSTOMIZE] Database setup instructions
+- No `# type: ignore` without a comment explaining why

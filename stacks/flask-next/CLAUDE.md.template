@@ -1,0 +1,79 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+# Backend (Flask/Python)
+cd backend && flask run                  # Dev server (port 5000)
+cd backend && pytest                     # Run tests
+cd backend && pytest tests/unit          # Unit tests only
+cd backend && alembic upgrade head       # Run migrations
+cd backend && alembic revision --autogenerate -m "desc"  # New migration
+
+# Frontend (Next.js)
+cd frontend && npm run dev               # Dev server (port 3000)
+cd frontend && npm run build             # Production build
+cd frontend && npm run lint              # ESLint + Prettier
+cd frontend && npm test                  # Jest/Vitest tests
+
+# Infrastructure
+# [CUSTOMIZE] terraform, docker-compose, deploy commands
+```
+
+## Architecture
+
+- **Backend**: Flask (Python 3.11+), SQLAlchemy ORM, Alembic migrations
+- **Frontend**: Next.js (TypeScript), Tailwind CSS
+- **Database**: [CUSTOMIZE] PostgreSQL / Cloud SQL
+- **Infra**: [CUSTOMIZE] GCP Cloud Run / AWS / Docker Compose
+- **API**: REST with JSON, backend serves at /api/*
+
+## Project Structure
+
+```
+[CUSTOMIZE] Adjust to your actual layout
+backend/
+├── app/
+│   ├── routes/          # Flask blueprints
+│   ├── services/        # Business logic
+│   ├── models/          # SQLAlchemy models
+│   ├── schemas/         # Pydantic/Marshmallow validation
+│   └── lib/             # Shared utilities
+├── migrations/          # Alembic migrations
+├── tests/
+│   ├── unit/
+│   └── integration/
+└── requirements.txt
+
+frontend/
+├── src/
+│   ├── app/             # Next.js app router (or pages/)
+│   ├── components/      # React components
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # API client, utilities
+│   └── types/           # TypeScript types
+└── package.json
+```
+
+## Conventions
+
+- Backend: snake_case everywhere, type hints on all functions
+- Frontend: camelCase for variables, PascalCase for components
+- API responses: `{ "data": ..., "error": ..., "meta": ... }`
+- Validate all inputs: Pydantic/Marshmallow on backend, Zod on frontend
+- Never use `print()` — use the logger module
+- Never use `console.log` — use the logger utility
+
+## Important
+
+- [CUSTOMIZE] Backend tests hit a real local DB — run migrations first
+- [CUSTOMIZE] Environment variables in .env (never commit)
+- Strict TypeScript: no `any`, no unused imports
+- Python: type hints required, no bare `except:`
+
+## References
+
+- API conventions: @.claude/rules/api-conventions.md
+- Backend patterns: @.claude/rules/flask-conventions.md

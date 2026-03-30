@@ -1,0 +1,64 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description of what this project does.
+
+## Commands
+
+```bash
+[CUSTOMIZE] # Fill in your actual commands
+# dev        →
+# test       →
+# lint       →
+# build      →
+# migrate    →
+# deploy     →
+```
+
+## Architecture
+
+[CUSTOMIZE] Brief description of the architecture (3-5 lines max).
+
+- **Backend**: [framework, language, patterns]
+- **Frontend**: [framework, language, patterns]
+- **Infra**: [cloud, IaC, CI/CD]
+- **Database**: [engine, ORM, migrations]
+
+## Project Structure
+
+```
+[CUSTOMIZE] Only list the key directories, not every file.
+src/            # or app/, backend/, etc.
+├── handlers/   # [what lives here]
+├── services/   # [what lives here]
+├── models/     # [what lives here]
+└── lib/        # [what lives here]
+frontend/       # or client/, web/, etc.
+├── components/ # [what lives here]
+├── pages/      # [what lives here]
+└── hooks/      # [what lives here]
+```
+
+## Conventions
+
+[CUSTOMIZE] Only include what Claude would get wrong without being told.
+
+- [Import style / module system]
+- [Error handling pattern]
+- [Naming conventions]
+- [Test file location and naming]
+- [Logging approach — not console.log]
+
+## Important / Gotchas
+
+[CUSTOMIZE] Non-obvious things that cause bugs if ignored.
+
+- [e.g., "Tests hit a real local DB, run `make db-test-reset` first"]
+- [e.g., "Never commit .env — secrets are in Secret Manager"]
+- [e.g., "Strict TypeScript: no `any`, no unused imports"]
+
+## References
+
+For detailed docs, see:
+- Architecture deep-dive: @docs/architecture.md
+- API conventions: @.claude/rules/api-conventions.md
+- Deployment: @docs/deployment.md

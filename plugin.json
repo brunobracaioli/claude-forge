@@ -1,0 +1,24 @@
+{
+  "name": "claude-forge",
+  "version": "1.0.0",
+  "description": "Bootstrap the complete .claude/ directory structure for any new project. Includes CLAUDE.md, rules, commands, agents, hooks, and stack-specific presets.",
+  "author": "brunobracaioli",
+  "license": "MIT",
+  "repository": "https://github.com/brunobracaioli/claude-forge",
+  "keywords": [
+    "bootstrap",
+    "scaffold",
+    "project-setup",
+    "claude-code",
+    "developer-tools",
+    "productivity"
+  ],
+  "skills": [
+    {
+      "path": ".",
+      "name": "claude-forge"
+    }
+  ],
+  "hooks": [],
+  "commands": []
+}

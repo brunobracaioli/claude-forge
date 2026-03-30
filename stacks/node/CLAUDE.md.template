@@ -1,0 +1,53 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+npm run dev              # Dev server
+npm run build            # Production build
+npm run test             # Run tests
+npm run test:watch       # Tests in watch mode
+npm run lint             # ESLint + Prettier
+npm run lint:fix         # Auto-fix lint issues
+npm run db:migrate       # [CUSTOMIZE] Run migrations
+npm run db:seed          # [CUSTOMIZE] Seed data
+```
+
+## Architecture
+
+- **Runtime**: Node.js 20+ with TypeScript
+- **Framework**: [CUSTOMIZE] Express / Fastify / Hono / NestJS
+- **Database**: [CUSTOMIZE] PostgreSQL via Prisma / Drizzle / TypeORM
+- **Testing**: [CUSTOMIZE] Vitest / Jest
+- **Package manager**: [CUSTOMIZE] npm / pnpm / bun
+
+## Project Structure
+
+```
+[CUSTOMIZE]
+src/
+├── handlers/       # Route handlers / controllers
+├── services/       # Business logic
+├── models/         # Data models / schemas
+├── middleware/      # Express/Fastify middleware
+├── lib/            # Shared utilities
+└── types/          # TypeScript type definitions
+tests/              # Mirrors src/ structure
+```
+
+## Conventions
+
+- ES modules (`import/export`), never CommonJS (`require`)
+- Destructure imports: `import { foo } from 'bar'`
+- Validate all inputs with Zod schemas
+- Response shape: `{ data, error, meta }`
+- Use the logger module, never `console.log`
+- Strict TypeScript: no `any`, no unused imports
+
+## Important
+
+- [CUSTOMIZE] Tests hit a real local DB — run migrations first
+- [CUSTOMIZE] Env vars in .env (never commit)
+- All async handlers must have error boundaries

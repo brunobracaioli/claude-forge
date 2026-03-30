@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(python -m pytest *)",
+      "Bash(python -m mypy *)",
+      "Bash(python -m ruff *)",
+      "Bash(python -m alembic *)",
+      "Bash(pip install *)",
+      "Bash(pip install * --break-system-packages)",
+      "Bash(poetry *)",
+      "Bash(uv *)"
+    ],
+    "deny": []
+  }
+}

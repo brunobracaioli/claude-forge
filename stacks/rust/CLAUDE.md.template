@@ -1,0 +1,57 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+cargo build              # Debug build
+cargo build --release    # Release build
+cargo test               # Run all tests
+cargo test -- --nocapture # Tests with stdout
+cargo clippy             # Linting
+cargo fmt                # Formatting
+cargo doc --open         # Generate and open docs
+cargo run                # Run the binary
+```
+
+## Architecture
+
+- **Language**: Rust (latest stable)
+- **Framework**: [CUSTOMIZE] Actix-web / Axum / Rocket / CLI (clap)
+- **Database**: [CUSTOMIZE] SQLx / Diesel / SeaORM
+- **Async runtime**: [CUSTOMIZE] Tokio / async-std
+- **Serialization**: serde + serde_json
+
+## Project Structure
+
+```
+[CUSTOMIZE]
+src/
+├── main.rs           # Entry point
+├── lib.rs            # Library root (if applicable)
+├── handlers/         # HTTP handlers / CLI commands
+├── services/         # Business logic
+├── models/           # Data structures
+├── db/               # Database queries and migrations
+├── error.rs          # Custom error types
+└── config.rs         # Configuration loading
+tests/
+├── integration/      # Integration tests
+└── common/           # Shared test utilities
+```
+
+## Conventions
+
+- Use `Result<T, E>` for all fallible operations, never `unwrap()` in production
+- Custom error type with `thiserror`, convert with `From` impls
+- Prefer borrowing over cloning: `&str` over `String` in function params
+- Use `#[derive(...)]` generously: Debug, Clone, Serialize, Deserialize
+- Module structure mirrors directory structure
+
+## Important
+
+- [CUSTOMIZE] Minimum Rust version (MSRV)
+- `cargo clippy` must pass with zero warnings before committing
+- `cargo fmt` is non-negotiable — format before every commit
+- No `unsafe` without a `// SAFETY:` comment explaining the invariant
