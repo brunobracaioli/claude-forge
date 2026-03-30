@@ -96,7 +96,8 @@ echo ""
 
 # --- Create directory structure ---
 log "Creating .claude/ structure..."
-mkdir -p "$PROJECT_ROOT/.claude/"{rules,commands,agents,skills/example-skill,hooks}
+mkdir -p "$PROJECT_ROOT/.claude/"{rules,agents,hooks}
+mkdir -p "$PROJECT_ROOT/.claude/skills/"{commit,fix-issue,review,spec,example-skill}
 
 # --- Base templates ---
 log "Copying base templates..."
@@ -104,8 +105,14 @@ log "Copying base templates..."
 # Rules (base)
 copy_dir "$TEMPLATE_DIR/rules" "$PROJECT_ROOT/.claude/rules"
 
-# Commands
-copy_dir "$TEMPLATE_DIR/commands" "$PROJECT_ROOT/.claude/commands"
+# Skills (slash commands)
+for skill_dir in "$TEMPLATE_DIR/skills"/*/; do
+  [ -d "$skill_dir" ] || continue
+  skill_name=$(basename "$skill_dir")
+  if [ -f "$skill_dir/SKILL.md" ]; then
+    safe_copy "$skill_dir/SKILL.md" "$PROJECT_ROOT/.claude/skills/$skill_name/SKILL.md"
+  fi
+done
 
 # Agents
 copy_dir "$TEMPLATE_DIR/agents" "$PROJECT_ROOT/.claude/agents"
@@ -114,9 +121,7 @@ copy_dir "$TEMPLATE_DIR/agents" "$PROJECT_ROOT/.claude/agents"
 copy_dir "$TEMPLATE_DIR/hooks" "$PROJECT_ROOT/.claude/hooks"
 chmod +x "$PROJECT_ROOT/.claude/hooks/"*.sh 2>/dev/null || true
 
-# Example skill
-safe_copy "$TEMPLATE_DIR/skills/example-skill/SKILL.md" \
-          "$PROJECT_ROOT/.claude/skills/example-skill/SKILL.md" || true
+# Note: example-skill is already copied in the skills loop above
 
 # Settings
 safe_copy "$TEMPLATE_DIR/settings.json.template" \
@@ -188,11 +193,11 @@ find "$PROJECT_ROOT/.claude" -type f | sort | sed "s|$PROJECT_ROOT/||"
 [ -f "$PROJECT_ROOT/CLAUDE.md" ] && echo "  CLAUDE.md"
 echo ""
 
-bold "Available commands:"
-echo "  /project:review     — Code review current branch"
-echo "  /project:fix-issue  — Fix a GitHub issue by number"
-echo "  /project:spec       — Interview → write spec"
-echo "  /project:commit     — Conventional commit"
+bold "Available skills:"
+echo "  /review     — Code review current branch"
+echo "  /fix-issue  — Fix a GitHub issue by number"
+echo "  /spec       — Interview → write spec"
+echo "  /commit     — Conventional commit"
 echo ""
 
 bold "Available agents:"

@@ -11,7 +11,7 @@
 
 <p align="center">
   <strong>Um comando para criar a estrutura completa <code>.claude/</code> no Claude Code.</strong><br>
-  Templates, regras, comandos, agentes, hooks e presets por stack.<br>
+  Templates, regras, skills, agentes, hooks e presets por stack.<br>
   Pare de reconstruir — comece a construir.
 </p>
 
@@ -51,7 +51,7 @@ Um único comando cria **15+ arquivos** em 6 categorias:
 |---|---|---|
 | 📄 | **CLAUDE.md** | Template do stack com marcadores `[CUSTOMIZE]`, menos de 200 linhas |
 | 📏 | **Rules** (4+) | `code-style` · `testing` · `security` · `git-workflow` + regras do stack |
-| ⚡ | **Commands** (4) | `/review` · `/fix-issue` · `/spec` · `/commit` |
+| ⚡ | **Skills** (4) | `/review` · `/fix-issue` · `/spec` · `/commit` |
 | 🤖 | **Agents** (2) | `code-reviewer` · `security-auditor` — subagentes isolados |
 | 🔒 | **Hooks** (2) | `validate-bash` bloqueia comandos destrutivos · `auto-format` roda seu formatter |
 | ⚙️ | **Settings** | Permissões sensatas com hooks configurados |
@@ -116,11 +116,11 @@ seu-projeto/
     │   ├── git-workflow.md
     │   └── <stack>-conventions.md     ← Regras específicas do stack
     │
-    ├── commands/                      ← Slash commands manuais
-    │   ├── review.md                  ← /project:review
-    │   ├── fix-issue.md               ← /project:fix-issue <n>
-    │   ├── spec.md                    ← /project:spec <feature>
-    │   └── commit.md                  ← /project:commit
+    ├── skills/                        ← Skills (formato canônico)
+    │   ├── review/SKILL.md            ← /review
+    │   ├── fix-issue/SKILL.md         ← /fix-issue <n>
+    │   ├── spec/SKILL.md              ← /spec <feature>
+    │   └── commit/SKILL.md            ← /commit
     │
     ├── agents/                        ← Subagentes isolados
     │   ├── code-reviewer.md
@@ -148,23 +148,27 @@ Todos os arquivos gerados com marcadores `[CUSTOMIZE]` precisam de ajuste.
 | 2 | `.claude/settings.json` | Ajuste allow/deny para suas ferramentas. |
 | 3 | `.claude/rules/` | Delete o que não se aplica, adicione o que falta. |
 | 4 | `.claude/hooks/auto-format.sh` | Descomente o formatter do seu stack. |
-| 5 | `.claude/commands/` | Adicione workflows específicos do projeto. |
+| 5 | `.claude/skills/` | Adicione workflows específicos do projeto. |
 | 6 | `.claude/agents/` `.claude/skills/` | Adicione conforme a complexidade cresce. |
 
 <details>
-<summary><strong>Criar novo command</strong></summary>
+<summary><strong>Criar novo skill</strong></summary>
 
 ```bash
-cat > .claude/commands/deploy.md << 'EOF'
+mkdir -p .claude/skills/deploy
+cat > .claude/skills/deploy/SKILL.md << 'EOF'
 ---
+name: deploy
 description: Deploy para staging ou produção
-argument-hint: [staging|production]
+argument-hint: "[staging|production]"
+disable-model-invocation: true
+allowed-tools: Bash
 ---
 Fazer deploy no ambiente $ARGUMENTS...
 EOF
 ```
 
-Cria `/project:deploy` automaticamente.
+Cria `/deploy` automaticamente.
 
 </details>
 
@@ -224,7 +228,7 @@ Contribuições são bem-vindas! Algumas ideias:
 | Categoria | Exemplos |
 |:---|:---|
 | **Novos stacks** | Django, Go, Java/Spring, PHP/Laravel, .NET |
-| **Novos commands** | deploy, changelog, migration, docs-update |
+| **Novos skills** | deploy, changelog, migration, docs-update |
 | **Novos agents** | performance-profiler, accessibility-auditor, api-designer |
 | **Traduções** | Ajude a traduzir templates para outros idiomas |
 

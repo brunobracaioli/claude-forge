@@ -1,6 +1,9 @@
 ---
+name: commit
 description: Stage changes, generate a conventional commit message, and commit.
 argument-hint: "[optional: override commit message]"
+disable-model-invocation: true
+allowed-tools: Read, Bash
 ---
 
 ## Current Changes

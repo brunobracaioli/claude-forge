@@ -1,6 +1,9 @@
 ---
+name: spec
 description: Interview the user about a feature, then write a detailed spec to SPEC.md.
-argument-hint: [feature-description]
+argument-hint: "[feature-description]"
+disable-model-invocation: true
+allowed-tools: Read, Write, Edit
 ---
 
 I want to build: $ARGUMENTS

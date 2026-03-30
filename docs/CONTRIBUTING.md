@@ -13,19 +13,25 @@ Thanks for considering a contribution! Here's how to help.
 4. Update both README files with the new stack in the table
 5. Test: run the bootstrap in a real project with that stack
 
-## Adding a New Command
+## Adding a New Skill (Slash Command)
 
-1. Create `.md` file in `templates/commands/`
-2. Use `$ARGUMENTS` for user input
+1. Create a directory in `templates/skills/<name>/` with a `SKILL.md` inside
+2. Use `$ARGUMENTS` for user input, `${CLAUDE_SKILL_DIR}` for skill-relative paths
 3. Use `!`backtick`` syntax for dynamic shell output
-4. Include a YAML frontmatter with `description` and optionally `argument-hint`
+4. Include YAML frontmatter with `name`, `description`, and optionally `argument-hint`
+5. Add `disable-model-invocation: true` for skills with side effects (commits, deploys)
+6. Add `allowed-tools` to restrict available tools
 
 ## Adding a New Agent
 
+See `.claude/rules/agent-creation.md` for the complete field reference, design principles, and anti-patterns.
+
 1. Create `.md` file in `templates/agents/`
-2. Include frontmatter: `name`, `description`, `model`, `tools`
+2. Include frontmatter: `name`, `description`, `model`, `tools`, `maxTurns`, `memory`
 3. Keep the persona focused — one job per agent
 4. Restrict tools to minimum needed (read-only agents shouldn't have Write)
+5. Define an explicit output format (severity, file:line, code snippets)
+6. Add `memory: project` for agents that benefit from cross-session learning
 
 ## Adding a New Rule
 

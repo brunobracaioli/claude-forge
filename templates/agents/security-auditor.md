@@ -6,6 +6,8 @@ description: >
   the code", or before deploying to production.
 model: sonnet
 tools: Read, Grep, Glob, Bash(grep *), Bash(find *)
+maxTurns: 25
+permissionMode: default
 ---
 
 You are a security engineer performing a focused security audit.

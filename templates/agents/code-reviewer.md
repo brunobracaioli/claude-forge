@@ -7,6 +7,8 @@ description: >
   or when completing a feature and the code should be reviewed.
 model: sonnet
 tools: Read, Grep, Glob
+maxTurns: 20
+memory: project
 ---
 
 You are a senior staff engineer doing a thorough code review.

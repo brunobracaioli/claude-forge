@@ -11,7 +11,7 @@
 
 <p align="center">
   <strong>One command to scaffold the complete <code>.claude/</code> directory for Claude Code.</strong><br>
-  Templates, rules, commands, agents, hooks, and stack-specific presets.<br>
+  Templates, rules, skills, agents, hooks, and stack-specific presets.<br>
   Stop rebuilding — start building.
 </p>
 
@@ -51,7 +51,7 @@ A single command creates **15+ files** across 6 categories:
 |---|---|---|
 | 📄 | **CLAUDE.md** | Stack-specific template with `[CUSTOMIZE]` markers, under 200 lines |
 | 📏 | **Rules** (4+) | `code-style` · `testing` · `security` · `git-workflow` + stack-specific |
-| ⚡ | **Commands** (4) | `/review` · `/fix-issue` · `/spec` · `/commit` |
+| ⚡ | **Skills** (4) | `/review` · `/fix-issue` · `/spec` · `/commit` |
 | 🤖 | **Agents** (2) | `code-reviewer` · `security-auditor` — isolated subagents |
 | 🔒 | **Hooks** (2) | `validate-bash` blocks destructive commands · `auto-format` runs your formatter |
 | ⚙️ | **Settings** | Sensible permissions with hook wiring out-of-the-box |
@@ -116,11 +116,11 @@ your-project/
     │   ├── git-workflow.md
     │   └── <stack>-conventions.md     ← Stack-specific rules
     │
-    ├── commands/                      ← Manual slash commands
-    │   ├── review.md                  ← /project:review
-    │   ├── fix-issue.md               ← /project:fix-issue <n>
-    │   ├── spec.md                    ← /project:spec <feature>
-    │   └── commit.md                  ← /project:commit
+    ├── skills/                        ← Slash commands (canonical format)
+    │   ├── review/SKILL.md            ← /review
+    │   ├── fix-issue/SKILL.md         ← /fix-issue <n>
+    │   ├── spec/SKILL.md              ← /spec <feature>
+    │   └── commit/SKILL.md            ← /commit
     │
     ├── agents/                        ← Isolated subagents
     │   ├── code-reviewer.md
@@ -148,23 +148,27 @@ All generated files with `[CUSTOMIZE]` markers need project-specific adjustments
 | 2 | `.claude/settings.json` | Adjust allow/deny for your build tools. |
 | 3 | `.claude/rules/` | Delete what doesn't apply, add what's missing. |
 | 4 | `.claude/hooks/auto-format.sh` | Uncomment the formatter for your stack. |
-| 5 | `.claude/commands/` | Add project-specific workflows. |
+| 5 | `.claude/skills/` | Add project-specific workflows. |
 | 6 | `.claude/agents/` `.claude/skills/` | Add as complexity grows. |
 
 <details>
-<summary><strong>Adding a new command</strong></summary>
+<summary><strong>Adding a new skill</strong></summary>
 
 ```bash
-cat > .claude/commands/deploy.md << 'EOF'
+mkdir -p .claude/skills/deploy
+cat > .claude/skills/deploy/SKILL.md << 'EOF'
 ---
+name: deploy
 description: Deploy to staging or production
-argument-hint: [staging|production]
+argument-hint: "[staging|production]"
+disable-model-invocation: true
+allowed-tools: Bash
 ---
 Deploy to $ARGUMENTS environment...
 EOF
 ```
 
-This creates `/project:deploy` automatically.
+This creates `/deploy` automatically.
 
 </details>
 
@@ -224,7 +228,7 @@ Contributions welcome! Some ideas:
 | Category | Examples |
 |:---|:---|
 | **New stacks** | Django, Go, Java/Spring, PHP/Laravel, .NET |
-| **New commands** | deploy, changelog, migration, docs-update |
+| **New skills** | deploy, changelog, migration, docs-update |
 | **New agents** | performance-profiler, accessibility-auditor, api-designer |
 | **Translations** | Help translate templates to other languages |
 

@@ -19,6 +19,5 @@
       "name": "claude-forge"
     }
   ],
-  "hooks": [],
-  "commands": []
+  "hooks": []
 }

@@ -1,6 +1,9 @@
 ---
+name: fix-issue
 description: Investigate and fix a GitHub issue by number.
 argument-hint: <issue-number>
+disable-model-invocation: true
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Issue Details

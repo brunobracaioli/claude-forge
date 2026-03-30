@@ -36,3 +36,4 @@ Reference additional files with @syntax:
 - [CUSTOMIZE] Any gotchas or important context
 - Skills support `!`backtick`` to inject shell output into the prompt
 - Use `$ARGUMENTS` to capture user input after the skill name
+- Use `${CLAUDE_SKILL_DIR}` to reference files relative to the skill directory

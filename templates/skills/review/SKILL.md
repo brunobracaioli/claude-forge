@@ -1,5 +1,8 @@
 ---
+name: review
 description: Review current branch diff against main for issues before merging.
+disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Bash
 ---
 
 ## Changed Files

@@ -2,13 +2,12 @@
 name: claude-forge
 description: >
   Bootstrap the complete .claude/ directory structure for any new project with
-  replicable templates, CLAUDE.md, rules, commands, agents, hooks, and settings.
+  replicable templates, CLAUDE.md, rules, skills, agents, hooks, and settings.
   Use this skill whenever the user says "bootstrap project", "mount project structure",
   "setup claude code", "initialize .claude", "start new project", "monte a estrutura
   do projeto", "prepare project for claude code", "scaffold claude config", or any
   variation asking to set up Claude Code configuration for a new or existing codebase.
-  Also trigger when the user asks to "create CLAUDE.md template", "setup commands and
-  skills", or wants a replicable project skeleton. Supports stack-specific variants
+  Also trigger when the user asks to "create CLAUDE.md template", "setup skills", or wants a replicable project skeleton. Supports stack-specific variants
   including flask-next, node, python, react, and rust.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 argument-hint: "[stack: flask-next | node | python | react | rust | generic]"
@@ -41,12 +40,12 @@ If detection is ambiguous, ask ONE question:
 ### Step 2: Run the Bootstrap Script
 
 ```bash
-bash "$SKILL_DIR/scripts/bootstrap.sh" "$(pwd)" "<detected-or-specified-stack>"
+bash "${CLAUDE_SKILL_DIR}/scripts/bootstrap.sh" "$(pwd)" "<detected-or-specified-stack>"
 ```
 
 The script:
 1. Creates the `.claude/` directory tree
-2. Copies base templates (rules, commands, agents, hooks, settings)
+2. Copies base templates (rules, skills, agents, hooks, settings)
 3. Overlays stack-specific files from `stacks/<stack>/`
 4. Generates the `.claude/.gitignore` and updates root `.gitignore`
 5. Never overwrites existing files (safe to re-run)
@@ -77,7 +76,7 @@ Merge `templates/settings.json.template` with `stacks/<stack>/settings.json.over
 Show the user:
 1. Directory tree created (use `find .claude -type f`)
 2. Files marked `[CUSTOMIZE]` that need attention
-3. Available commands: `/project:review`, `/project:fix-issue`, `/project:spec`, `/project:commit`
+3. Available skills: `/review`, `/fix-issue`, `/spec`, `/commit`
 4. Available agents: code-reviewer, security-auditor
 5. Next steps: "Review CLAUDE.md, then start coding"
 
