@@ -1,82 +1,102 @@
-# 🚀 Claude Forge
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Claude Forge — Forge your .claude/ in one command" width="100%">
+</p>
 
-**One command to scaffold the complete `.claude/` directory for any project.**
+<p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
+  <img src="https://img.shields.io/badge/stacks-6-f59e0b.svg?style=flat-square" alt="Stacks">
+  <img src="https://img.shields.io/badge/templates-40%20files-8b5cf6.svg?style=flat-square" alt="Templates">
+  <img src="https://img.shields.io/badge/claude--code-skill-10b981.svg?style=flat-square" alt="Claude Code Skill">
+</p>
 
-Stop rebuilding your Claude Code configuration from scratch every time you start a new project. This skill creates a production-ready `.claude/` structure with templates, rules, commands, agents, hooks, and stack-specific presets — all customizable.
+<p align="center">
+  <strong>One command to scaffold the complete <code>.claude/</code> directory for Claude Code.</strong><br>
+  Templates, rules, commands, agents, hooks, and stack-specific presets.<br>
+  Stop rebuilding — start building.
+</p>
 
-🇧🇷 [Leia em Português](./README.pt-br.md)
+<p align="center">
+  🇧🇷 <a href="./README.pt-br.md">Leia em Português</a>
+</p>
 
 ---
 
-## ✨ What You Get
+## ⚡ Quick Start
 
-| Component | Files | Purpose |
+```bash
+# Install once (global skill)
+git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/claude-forge
+
+# Use in any project
+cd your-project
+```
+
+Then inside Claude Code:
+
+```
+/claude-forge flask-next
+```
+
+Or just ask naturally:
+
+> *"Set up the .claude directory for this project"*
+
+---
+
+## 🎯 What You Get
+
+A single command creates **15+ files** across 6 categories:
+
+| | Component | What's Inside |
 |---|---|---|
-| **CLAUDE.md** | 1 | Stack-specific template with `[CUSTOMIZE]` markers |
-| **Rules** | 4+ | code-style, testing, security, git-workflow + stack rules |
-| **Commands** | 4 | `/review`, `/fix-issue`, `/spec`, `/commit` |
-| **Agents** | 2 | code-reviewer, security-auditor (isolated subagents) |
-| **Hooks** | 2 | validate-bash (blocks destructive commands), auto-format |
-| **Settings** | 1 | Sensible permissions + hook wiring |
-| **Example Skill** | 1 | Template to create your own skills |
+| 📄 | **CLAUDE.md** | Stack-specific template with `[CUSTOMIZE]` markers, under 200 lines |
+| 📏 | **Rules** (4+) | `code-style` · `testing` · `security` · `git-workflow` + stack-specific |
+| ⚡ | **Commands** (4) | `/review` · `/fix-issue` · `/spec` · `/commit` |
+| 🤖 | **Agents** (2) | `code-reviewer` · `security-auditor` — isolated subagents |
+| 🔒 | **Hooks** (2) | `validate-bash` blocks destructive commands · `auto-format` runs your formatter |
+| ⚙️ | **Settings** | Sensible permissions with hook wiring out-of-the-box |
 
-### Supported Stacks
+---
 
-| Stack | Detected by | Extra Rules |
-|---|---|---|
-| `flask-next` | `requirements.txt` + `next.config.*` | API conventions, Flask patterns |
-| `node` | `package.json` | Node/TypeScript conventions |
-| `python` | `requirements.txt` / `pyproject.toml` | Python conventions, type hints |
-| `react` | `next.config.*` | React/Next.js conventions, a11y |
-| `rust` | `Cargo.toml` | Rust conventions, error handling |
-| `generic` | (fallback) | Base rules only |
+## 🏗️ Supported Stacks
+
+Auto-detection scans your project files and picks the right preset:
+
+| Stack | Detected By | Extra Rules |
+|:---|:---|:---|
+| **flask-next** | `requirements.txt` + `next.config.*` | API conventions, Flask patterns |
+| **node** | `package.json` | Node/TypeScript conventions |
+| **python** | `requirements.txt` / `pyproject.toml` | Python conventions, type hints |
+| **react** | `next.config.*` (no Python files) | React/Next.js conventions, a11y |
+| **rust** | `Cargo.toml` | Rust conventions, error handling |
+| **generic** | *(fallback)* | Base rules only |
+
+> **Adding a stack is a PR away.** Django, Go, Java/Spring, PHP/Laravel, .NET — [contributions welcome](#-contributing).
 
 ---
 
 ## 📦 Installation
 
-### Option A: Claude Code Plugin (Recommended)
+Choose one:
 
-```bash
-/plugins install claude-forge
-```
-
-### Option B: Git Clone
+### Git Clone *(recommended)*
 
 ```bash
 git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/claude-forge
 chmod +x ~/.claude/skills/claude-forge/scripts/bootstrap.sh
 ```
 
-### Option C: One-liner
+### One-liner
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
 ```
 
----
-
-## 🛠️ Usage
-
-### Inside Claude Code
+### Claude Code Plugin
 
 ```
-/claude-forge flask-next
+/plugins install claude-forge
 ```
-
-Or in natural language:
-
-> "Bootstrap this project for Claude Code"
-> "Set up the .claude directory"
-> "Mount the project structure so we can start"
-
-### Auto-Detection
-
-```
-/claude-forge auto
-```
-
-Claude scans your project files and picks the right stack automatically.
 
 ---
 
@@ -84,50 +104,57 @@ Claude scans your project files and picks the right stack automatically.
 
 ```
 your-project/
-├── CLAUDE.md                          # Team instructions (< 200 lines)
+├── CLAUDE.md                          ← Team instructions (< 200 lines)
 └── .claude/
-    ├── settings.json                  # Permissions + hooks
-    ├── .gitignore                     # Ignores personal files
-    ├── rules/
-    │   ├── code-style.md              # Code standards
-    │   ├── testing.md                 # Test strategy
-    │   ├── security.md                # Security rules
-    │   ├── git-workflow.md            # Git flow + commits
-    │   └── <stack>-conventions.md     # Stack-specific rules
-    ├── commands/
-    │   ├── review.md                  # /project:review
-    │   ├── fix-issue.md               # /project:fix-issue <n>
-    │   ├── spec.md                    # /project:spec <feature>
-    │   └── commit.md                  # /project:commit
-    ├── agents/
-    │   ├── code-reviewer.md           # Isolated code review
-    │   └── security-auditor.md        # Security audit
+    ├── settings.json                  ← Permissions + hooks
+    ├── .gitignore                     ← Ignores personal files
+    │
+    ├── rules/                         ← Modular instructions
+    │   ├── code-style.md
+    │   ├── testing.md
+    │   ├── security.md
+    │   ├── git-workflow.md
+    │   └── <stack>-conventions.md     ← Stack-specific rules
+    │
+    ├── commands/                      ← Manual slash commands
+    │   ├── review.md                  ← /project:review
+    │   ├── fix-issue.md               ← /project:fix-issue <n>
+    │   ├── spec.md                    ← /project:spec <feature>
+    │   └── commit.md                  ← /project:commit
+    │
+    ├── agents/                        ← Isolated subagents
+    │   ├── code-reviewer.md
+    │   └── security-auditor.md
+    │
     ├── skills/
-    │   └── example-skill/SKILL.md     # Template for new skills
-    └── hooks/
-        ├── validate-bash.sh           # Blocks rm -rf, secret exposure
-        └── auto-format.sh             # Auto-format after edits
+    │   └── example-skill/SKILL.md     ← Template for your own skills
+    │
+    └── hooks/                         ← Event-driven automation
+        ├── validate-bash.sh           ← Blocks rm -rf, secret exposure
+        └── auto-format.sh             ← Auto-format after edits
 ```
 
 ---
 
 ## 🎨 Customization
 
-All files with `[CUSTOMIZE]` markers need project-specific adjustments.
+All generated files with `[CUSTOMIZE]` markers need project-specific adjustments.
 
-### Priority Order
+**Edit in this order** — highest impact first:
 
-1. **CLAUDE.md** — Edit first. Most impactful file.
-2. **settings.json** — Adjust allow/deny for your build tools.
-3. **rules/** — Delete what doesn't apply, add what's missing.
-4. **hooks/auto-format.sh** — Uncomment the formatter for your stack.
-5. **commands/** — Add project-specific workflows.
-6. **agents/** and **skills/** — Add as needed.
+| Priority | File | Why |
+|:---:|:---|:---|
+| 1 | `CLAUDE.md` | Claude reads this every session. Get it right. |
+| 2 | `.claude/settings.json` | Adjust allow/deny for your build tools. |
+| 3 | `.claude/rules/` | Delete what doesn't apply, add what's missing. |
+| 4 | `.claude/hooks/auto-format.sh` | Uncomment the formatter for your stack. |
+| 5 | `.claude/commands/` | Add project-specific workflows. |
+| 6 | `.claude/agents/` `.claude/skills/` | Add as complexity grows. |
 
-### Adding a New Command
+<details>
+<summary><strong>Adding a new command</strong></summary>
 
 ```bash
-# Creates /project:deploy
 cat > .claude/commands/deploy.md << 'EOF'
 ---
 description: Deploy to staging or production
@@ -137,15 +164,25 @@ Deploy to $ARGUMENTS environment...
 EOF
 ```
 
-### Adding a New Skill
+This creates `/project:deploy` automatically.
+
+</details>
+
+<details>
+<summary><strong>Adding a new skill</strong></summary>
 
 ```bash
 mkdir -p .claude/skills/my-skill
-# Copy and edit the example template:
 cp .claude/skills/example-skill/SKILL.md .claude/skills/my-skill/SKILL.md
+# Edit SKILL.md with your instructions
 ```
 
-### Adding a New Agent
+Skills auto-invoke based on the `description` field in frontmatter.
+
+</details>
+
+<details>
+<summary><strong>Adding a new agent</strong></summary>
 
 ```bash
 cat > .claude/agents/db-explorer.md << 'EOF'
@@ -159,18 +196,24 @@ You are a database expert...
 EOF
 ```
 
+Agents run in isolated context windows — they won't pollute your main session.
+
+</details>
+
 ---
 
 ## 🧠 Design Principles
 
 These templates follow [official Anthropic best practices](https://code.claude.com/docs/en/best-practices):
 
-1. **CLAUDE.md under 200 lines** — Overflow goes to `.claude/rules/`
-2. **Progressive disclosure** — `@references` instead of inlining everything
-3. **Deterministic safety** — Hooks block dangerous commands 100% of the time
-4. **Git-friendly** — Team files committed, personal files gitignored
-5. **Non-destructive** — Never overwrites existing files (safe to re-run)
-6. **~150 instruction budget** — Claude Code's system prompt uses ~50 instructions. Your CLAUDE.md + rules share the remaining ~100-150 for reliable adherence.
+| Principle | Why |
+|:---|:---|
+| **CLAUDE.md under 200 lines** | Longer files degrade instruction adherence. Overflow goes to `rules/`. |
+| **Progressive disclosure** | `@references` load on demand — don't dump everything into context. |
+| **Deterministic safety** | Hooks block dangerous commands 100% of the time. CLAUDE.md is ~70%. |
+| **Git-friendly** | Team files committed. Personal files (`.local.md`, `.local.json`) gitignored. |
+| **Non-destructive** | Never overwrites existing files. Safe to re-run on any project. |
+| **~150 instruction budget** | Claude Code's system prompt uses ~50 instructions. Your config shares the rest. |
 
 ---
 
@@ -178,10 +221,12 @@ These templates follow [official Anthropic best practices](https://code.claude.c
 
 Contributions welcome! Some ideas:
 
-- **New stacks**: Django, Go, Java/Spring, PHP/Laravel, .NET
-- **New commands**: deploy, changelog, migration, docs-update
-- **New agents**: performance-profiler, accessibility-auditor, api-designer
-- **Translations**: Help translate templates to other languages
+| Category | Examples |
+|:---|:---|
+| **New stacks** | Django, Go, Java/Spring, PHP/Laravel, .NET |
+| **New commands** | deploy, changelog, migration, docs-update |
+| **New agents** | performance-profiler, accessibility-auditor, api-designer |
+| **Translations** | Help translate templates to other languages |
 
 See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for guidelines.
 
@@ -196,6 +241,7 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for guidelines.
 
 ---
 
-## 📄 License
-
-MIT — See [LICENSE](./LICENSE)
+<p align="center">
+  <sub>Built with ⚡ by <a href="https://github.com/brunobracaioli">@brunobracaioli</a></sub><br>
+  <sub>MIT License</sub>
+</p>

@@ -1,82 +1,102 @@
-# 🚀 Claude Forge
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Claude Forge — Forge your .claude/ in one command" width="100%">
+</p>
 
-**Um comando para criar a estrutura completa `.claude/` em qualquer projeto.**
+<p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg?style=flat-square" alt="Licença"></a>
+  <img src="https://img.shields.io/badge/stacks-6-f59e0b.svg?style=flat-square" alt="Stacks">
+  <img src="https://img.shields.io/badge/templates-40%20arquivos-8b5cf6.svg?style=flat-square" alt="Templates">
+  <img src="https://img.shields.io/badge/claude--code-skill-10b981.svg?style=flat-square" alt="Claude Code Skill">
+</p>
 
-Pare de reconstruir a configuração do Claude Code do zero toda vez que iniciar um projeto novo. Este skill cria uma estrutura `.claude/` pronta para produção com templates, regras, comandos, agentes, hooks e presets específicos por stack — tudo customizável.
+<p align="center">
+  <strong>Um comando para criar a estrutura completa <code>.claude/</code> no Claude Code.</strong><br>
+  Templates, regras, comandos, agentes, hooks e presets por stack.<br>
+  Pare de reconstruir — comece a construir.
+</p>
 
-🇺🇸 [Read in English](./README.md)
+<p align="center">
+  🇺🇸 <a href="./README.md">Read in English</a>
+</p>
 
 ---
 
-## ✨ O Que Você Recebe
+## ⚡ Início Rápido
 
-| Componente | Arquivos | Função |
+```bash
+# Instale uma vez (skill global)
+git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/claude-forge
+
+# Use em qualquer projeto
+cd seu-projeto
+```
+
+Dentro do Claude Code:
+
+```
+/claude-forge flask-next
+```
+
+Ou peça em linguagem natural:
+
+> *"Monte a estrutura do projeto para começarmos"*
+
+---
+
+## 🎯 O Que Você Recebe
+
+Um único comando cria **15+ arquivos** em 6 categorias:
+
+| | Componente | O Que Inclui |
 |---|---|---|
-| **CLAUDE.md** | 1 | Template específico do stack com marcadores `[CUSTOMIZE]` |
-| **Rules** | 4+ | code-style, testing, security, git-workflow + regras do stack |
-| **Commands** | 4 | `/review`, `/fix-issue`, `/spec`, `/commit` |
-| **Agents** | 2 | code-reviewer, security-auditor (subagentes isolados) |
-| **Hooks** | 2 | validate-bash (bloqueia comandos destrutivos), auto-format |
-| **Settings** | 1 | Permissões sensatas + hooks configurados |
-| **Skill exemplo** | 1 | Template para criar seus próprios skills |
+| 📄 | **CLAUDE.md** | Template do stack com marcadores `[CUSTOMIZE]`, menos de 200 linhas |
+| 📏 | **Rules** (4+) | `code-style` · `testing` · `security` · `git-workflow` + regras do stack |
+| ⚡ | **Commands** (4) | `/review` · `/fix-issue` · `/spec` · `/commit` |
+| 🤖 | **Agents** (2) | `code-reviewer` · `security-auditor` — subagentes isolados |
+| 🔒 | **Hooks** (2) | `validate-bash` bloqueia comandos destrutivos · `auto-format` roda seu formatter |
+| ⚙️ | **Settings** | Permissões sensatas com hooks configurados |
 
-### Stacks Suportados
+---
 
-| Stack | Detectado por | Regras Extras |
-|---|---|---|
-| `flask-next` | `requirements.txt` + `next.config.*` | Convenções de API, padrões Flask |
-| `node` | `package.json` | Convenções Node/TypeScript |
-| `python` | `requirements.txt` / `pyproject.toml` | Convenções Python, type hints |
-| `react` | `next.config.*` | Convenções React/Next.js, a11y |
-| `rust` | `Cargo.toml` | Convenções Rust, error handling |
-| `generic` | (fallback) | Apenas regras base |
+## 🏗️ Stacks Suportados
+
+Auto-detecção analisa os arquivos do projeto e escolhe o preset certo:
+
+| Stack | Detectado Por | Regras Extras |
+|:---|:---|:---|
+| **flask-next** | `requirements.txt` + `next.config.*` | Convenções de API, padrões Flask |
+| **node** | `package.json` | Convenções Node/TypeScript |
+| **python** | `requirements.txt` / `pyproject.toml` | Convenções Python, type hints |
+| **react** | `next.config.*` (sem arquivos Python) | Convenções React/Next.js, a11y |
+| **rust** | `Cargo.toml` | Convenções Rust, error handling |
+| **generic** | *(fallback)* | Apenas regras base |
+
+> **Adicionar um stack é um PR.** Django, Go, Java/Spring, PHP/Laravel, .NET — [contribuições são bem-vindas](#-contribuindo).
 
 ---
 
 ## 📦 Instalação
 
-### Opção A: Plugin Claude Code (Recomendado)
+Escolha uma opção:
 
-```bash
-/plugins install claude-forge
-```
-
-### Opção B: Git Clone
+### Git Clone *(recomendado)*
 
 ```bash
 git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/claude-forge
 chmod +x ~/.claude/skills/claude-forge/scripts/bootstrap.sh
 ```
 
-### Opção C: One-liner
+### One-liner
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
 ```
 
----
-
-## 🛠️ Uso
-
-### Dentro do Claude Code
+### Plugin Claude Code
 
 ```
-/claude-forge flask-next
+/plugins install claude-forge
 ```
-
-Ou em linguagem natural:
-
-> "Monte a estrutura do projeto para começarmos"
-> "Bootstrap este projeto pro Claude Code"
-> "Configure o diretório .claude"
-
-### Auto-detecção
-
-```
-/claude-forge auto
-```
-
-O Claude analisa os arquivos do projeto e escolhe o stack automaticamente.
 
 ---
 
@@ -84,50 +104,57 @@ O Claude analisa os arquivos do projeto e escolhe o stack automaticamente.
 
 ```
 seu-projeto/
-├── CLAUDE.md                          # Instruções do time (< 200 linhas)
+├── CLAUDE.md                          ← Instruções do time (< 200 linhas)
 └── .claude/
-    ├── settings.json                  # Permissões + hooks
-    ├── .gitignore                     # Ignora arquivos pessoais
-    ├── rules/
-    │   ├── code-style.md              # Padrões de código
-    │   ├── testing.md                 # Estratégia de testes
-    │   ├── security.md                # Regras de segurança
-    │   ├── git-workflow.md            # Fluxo git + commits
-    │   └── <stack>-conventions.md     # Regras específicas do stack
-    ├── commands/
-    │   ├── review.md                  # /project:review
-    │   ├── fix-issue.md               # /project:fix-issue <n>
-    │   ├── spec.md                    # /project:spec <feature>
-    │   └── commit.md                  # /project:commit
-    ├── agents/
-    │   ├── code-reviewer.md           # Code review isolado
-    │   └── security-auditor.md        # Auditoria de segurança
+    ├── settings.json                  ← Permissões + hooks
+    ├── .gitignore                     ← Ignora arquivos pessoais
+    │
+    ├── rules/                         ← Instruções modulares
+    │   ├── code-style.md
+    │   ├── testing.md
+    │   ├── security.md
+    │   ├── git-workflow.md
+    │   └── <stack>-conventions.md     ← Regras específicas do stack
+    │
+    ├── commands/                      ← Slash commands manuais
+    │   ├── review.md                  ← /project:review
+    │   ├── fix-issue.md               ← /project:fix-issue <n>
+    │   ├── spec.md                    ← /project:spec <feature>
+    │   └── commit.md                  ← /project:commit
+    │
+    ├── agents/                        ← Subagentes isolados
+    │   ├── code-reviewer.md
+    │   └── security-auditor.md
+    │
     ├── skills/
-    │   └── example-skill/SKILL.md     # Template para novos skills
-    └── hooks/
-        ├── validate-bash.sh           # Bloqueia rm -rf, exposição de secrets
-        └── auto-format.sh             # Auto-format após edições
+    │   └── example-skill/SKILL.md     ← Template para criar seus skills
+    │
+    └── hooks/                         ← Automação por eventos
+        ├── validate-bash.sh           ← Bloqueia rm -rf, exposição de secrets
+        └── auto-format.sh             ← Auto-format após edições
 ```
 
 ---
 
 ## 🎨 Customização
 
-Todos os arquivos com marcadores `[CUSTOMIZE]` precisam de ajuste para o projeto.
+Todos os arquivos gerados com marcadores `[CUSTOMIZE]` precisam de ajuste.
 
-### Ordem de Prioridade
+**Edite nesta ordem** — maior impacto primeiro:
 
-1. **CLAUDE.md** — Edite primeiro. Arquivo mais impactante.
-2. **settings.json** — Ajuste allow/deny para suas ferramentas de build.
-3. **rules/** — Delete o que não se aplica, adicione o que falta.
-4. **hooks/auto-format.sh** — Descomente o formatter do seu stack.
-5. **commands/** — Adicione workflows específicos do projeto.
-6. **agents/** e **skills/** — Adicione conforme necessidade.
+| Prioridade | Arquivo | Por quê |
+|:---:|:---|:---|
+| 1 | `CLAUDE.md` | Claude lê isso toda sessão. Acerte de primeira. |
+| 2 | `.claude/settings.json` | Ajuste allow/deny para suas ferramentas. |
+| 3 | `.claude/rules/` | Delete o que não se aplica, adicione o que falta. |
+| 4 | `.claude/hooks/auto-format.sh` | Descomente o formatter do seu stack. |
+| 5 | `.claude/commands/` | Adicione workflows específicos do projeto. |
+| 6 | `.claude/agents/` `.claude/skills/` | Adicione conforme a complexidade cresce. |
 
-### Criar Novo Command
+<details>
+<summary><strong>Criar novo command</strong></summary>
 
 ```bash
-# Cria /project:deploy
 cat > .claude/commands/deploy.md << 'EOF'
 ---
 description: Deploy para staging ou produção
@@ -137,15 +164,25 @@ Fazer deploy no ambiente $ARGUMENTS...
 EOF
 ```
 
-### Criar Novo Skill
+Cria `/project:deploy` automaticamente.
+
+</details>
+
+<details>
+<summary><strong>Criar novo skill</strong></summary>
 
 ```bash
 mkdir -p .claude/skills/meu-skill
 cp .claude/skills/example-skill/SKILL.md .claude/skills/meu-skill/SKILL.md
-# Edite o SKILL.md com as instruções do seu skill
+# Edite o SKILL.md com suas instruções
 ```
 
-### Criar Novo Agent
+Skills são auto-invocados baseado no campo `description` do frontmatter.
+
+</details>
+
+<details>
+<summary><strong>Criar novo agent</strong></summary>
 
 ```bash
 cat > .claude/agents/db-explorer.md << 'EOF'
@@ -159,18 +196,24 @@ Você é um especialista em banco de dados...
 EOF
 ```
 
+Agentes rodam em context windows isoladas — não poluem sua sessão principal.
+
+</details>
+
 ---
 
 ## 🧠 Princípios de Design
 
 Estes templates seguem as [melhores práticas oficiais da Anthropic](https://code.claude.com/docs/en/best-practices):
 
-1. **CLAUDE.md abaixo de 200 linhas** — Excedente vai para `.claude/rules/`
-2. **Progressive disclosure** — `@references` em vez de colocar tudo inline
-3. **Segurança determinística** — Hooks bloqueiam comandos perigosos 100% das vezes
-4. **Git-friendly** — Arquivos do time commitados, pessoais no gitignore
-5. **Não-destrutivo** — Nunca sobrescreve arquivos existentes (seguro re-executar)
-6. **Budget de ~150 instruções** — O system prompt do Claude Code usa ~50 instruções. Seu CLAUDE.md + rules compartilham as ~100-150 restantes.
+| Princípio | Por quê |
+|:---|:---|
+| **CLAUDE.md abaixo de 200 linhas** | Arquivos maiores degradam a aderência às instruções. Excedente vai pra `rules/`. |
+| **Progressive disclosure** | `@references` carregam sob demanda — não encha o contexto. |
+| **Segurança determinística** | Hooks bloqueiam comandos perigosos 100% das vezes. CLAUDE.md fica em ~70%. |
+| **Git-friendly** | Arquivos do time commitados. Pessoais (`.local.md`, `.local.json`) no gitignore. |
+| **Não-destrutivo** | Nunca sobrescreve arquivos existentes. Seguro re-executar em qualquer projeto. |
+| **Budget de ~150 instruções** | O system prompt do Claude Code usa ~50. Sua config divide o resto. |
 
 ---
 
@@ -178,10 +221,12 @@ Estes templates seguem as [melhores práticas oficiais da Anthropic](https://cod
 
 Contribuições são bem-vindas! Algumas ideias:
 
-- **Novos stacks**: Django, Go, Java/Spring, PHP/Laravel, .NET
-- **Novos commands**: deploy, changelog, migration, docs-update
-- **Novos agents**: performance-profiler, accessibility-auditor, api-designer
-- **Traduções**: Ajude a traduzir templates para outros idiomas
+| Categoria | Exemplos |
+|:---|:---|
+| **Novos stacks** | Django, Go, Java/Spring, PHP/Laravel, .NET |
+| **Novos commands** | deploy, changelog, migration, docs-update |
+| **Novos agents** | performance-profiler, accessibility-auditor, api-designer |
+| **Traduções** | Ajude a traduzir templates para outros idiomas |
 
 Veja [CONTRIBUTING.md](./docs/CONTRIBUTING.md) para as diretrizes.
 
@@ -196,6 +241,7 @@ Veja [CONTRIBUTING.md](./docs/CONTRIBUTING.md) para as diretrizes.
 
 ---
 
-## 📄 Licença
-
-MIT — Veja [LICENSE](./LICENSE)
+<p align="center">
+  <sub>Feito com ⚡ por <a href="https://github.com/brunobracaioli">@brunobracaioli</a></sub><br>
+  <sub>Licença MIT</sub>
+</p>
