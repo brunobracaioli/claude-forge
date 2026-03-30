@@ -1,4 +1,4 @@
-# 🚀 Claude Project Bootstrap
+# 🚀 Claude Forge
 
 **Um comando para criar a estrutura completa `.claude/` em qualquer projeto.**
 
@@ -38,14 +38,14 @@ Pare de reconstruir a configuração do Claude Code do zero toda vez que iniciar
 ### Opção A: Plugin Claude Code (Recomendado)
 
 ```bash
-/plugins install project-bootstrap
+/plugins install claude-forge
 ```
 
 ### Opção B: Git Clone
 
 ```bash
-git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/project-bootstrap
-chmod +x ~/.claude/skills/project-bootstrap/scripts/bootstrap.sh
+git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/claude-forge
+chmod +x ~/.claude/skills/claude-forge/scripts/bootstrap.sh
 ```
 
 ### Opção C: One-liner
@@ -61,7 +61,7 @@ curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/in
 ### Dentro do Claude Code
 
 ```
-/project-bootstrap flask-next
+/claude-forge flask-next
 ```
 
 Ou em linguagem natural:
@@ -73,7 +73,7 @@ Ou em linguagem natural:
 ### Auto-detecção
 
 ```
-/project-bootstrap auto
+/claude-forge auto
 ```
 
 O Claude analisa os arquivos do projeto e escolhe o stack automaticamente.
