@@ -30,7 +30,7 @@ echo -e "${BOLD}╚════════════════════�
 echo ""
 
 # --- Detect source ---
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 
 if [ -f "$SCRIPT_DIR/SKILL.md" ]; then
   SOURCE_DIR="$SCRIPT_DIR"
@@ -44,15 +44,9 @@ else
   SOURCE_DIR="$TEMP_DIR"
 fi
 
-# --- Install ---
+# --- Remove previous installation automatically ---
 if [ -d "$TARGET_DIR" ]; then
-  warn "Existing installation found at $TARGET_DIR"
-  read -p "  Overwrite? [y/N] " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    info "Installation cancelled."
-    exit 0
-  fi
+  warn "Removing previous installation at $TARGET_DIR..."
   rm -rf "$TARGET_DIR"
 fi
 
