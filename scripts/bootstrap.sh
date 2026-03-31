@@ -201,8 +201,19 @@ echo "  /commit     — Conventional commit"
 echo ""
 
 bold "Available agents:"
-echo "  code-reviewer       — Isolated code review (sonnet)"
-echo "  security-auditor    — Security audit (sonnet)"
+for agent_file in "$PROJECT_ROOT/.claude/agents"/*.md; do
+  [ -f "$agent_file" ] || continue
+  agent_name=$(basename "$agent_file" .md)
+  # Extract first content line after "description:" (handles YAML folded style)
+  agent_desc=$(awk '/^description:/{found=1; sub(/^description: *>? */, ""); if(length($0)>0){print; exit} next} found && /^  /{sub(/^  +/,""); print; exit}' "$agent_file" 2>/dev/null)
+  # Truncate at first period or 50 chars
+  agent_desc=$(echo "$agent_desc" | sed 's/\..*//' | cut -c1-50)
+  if [ -n "$agent_desc" ]; then
+    printf "  %-22s— %s\n" "$agent_name" "$agent_desc"
+  else
+    echo "  $agent_name"
+  fi
+done
 echo ""
 
 warn "Next steps:"

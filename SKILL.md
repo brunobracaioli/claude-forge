@@ -77,7 +77,7 @@ Show the user:
 1. Directory tree created (use `find .claude -type f`)
 2. Files marked `[CUSTOMIZE]` that need attention
 3. Available skills: `/review`, `/fix-issue`, `/spec`, `/commit`
-4. Available agents: code-reviewer, security-auditor
+4. Available agents (all from `.claude/agents/`)
 5. Next steps: "Review CLAUDE.md, then start coding"
 
 ## Principles
