@@ -25,7 +25,7 @@
 
 ```bash
 # Install once (global skill)
-git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/claude-forge
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
 
 # Use in any project
 cd your-project
@@ -51,9 +51,9 @@ A single command creates **15+ files** across 6 categories:
 |---|---|---|
 | 📄 | **CLAUDE.md** | Stack-specific template with `[CUSTOMIZE]` markers, under 200 lines |
 | 📏 | **Rules** (4+) | `code-style` · `testing` · `security` · `git-workflow` + stack-specific |
-| ⚡ | **Skills** (4) | `/review` · `/fix-issue` · `/spec` · `/commit` |
-| 🤖 | **Agents** (2) | `code-reviewer` · `security-auditor` — isolated subagents |
-| 🔒 | **Hooks** (2) | `validate-bash` blocks destructive commands · `auto-format` runs your formatter |
+| ⚡ | **Skills** (5) | `/review` · `/fix-issue` · `/spec` · `/spec-build` · `/commit` |
+| 🤖 | **Agents** (9) | `code-reviewer` · `security-auditor` · `debugger` · `test-writer` · `refactorer` · `doc-writer` · `orchestrator` · `api-developer` · `frontend-developer` |
+| 🔒 | **Hooks** (4) | `validate-bash` · `auto-format` · `teammate-idle` · `task-completed` |
 | ⚙️ | **Settings** | Sensible permissions with hook wiring out-of-the-box |
 
 ---
@@ -79,17 +79,20 @@ Auto-detection scans your project files and picks the right preset:
 
 Choose one:
 
-### Git Clone *(recommended)*
-
-```bash
-git clone https://github.com/brunobracaioli/claude-forge.git ~/.claude/skills/claude-forge
-chmod +x ~/.claude/skills/claude-forge/scripts/bootstrap.sh
-```
-
-### One-liner
+### One-liner *(recommended)*
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
+```
+
+### Manual download (no git required)
+
+```bash
+curl -sL https://github.com/brunobracaioli/claude-forge/archive/main.tar.gz | tar xz -C /tmp
+mkdir -p ~/.claude/skills/claude-forge
+cp -r /tmp/claude-forge-main/{SKILL.md,scripts,templates,stacks} ~/.claude/skills/claude-forge/
+chmod +x ~/.claude/skills/claude-forge/scripts/*.sh
+rm -rf /tmp/claude-forge-main
 ```
 
 ### Claude Code Plugin
@@ -97,6 +100,8 @@ curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/in
 ```
 /plugins install claude-forge
 ```
+
+> **Note:** Claude Forge is installed as a read-only skill — no git repository is linked. To update, simply re-run the installer.
 
 ---
 
@@ -120,18 +125,28 @@ your-project/
     │   ├── review/SKILL.md            ← /review
     │   ├── fix-issue/SKILL.md         ← /fix-issue <n>
     │   ├── spec/SKILL.md              ← /spec <feature>
+    │   ├── spec-build/SKILL.md        ← /spec-build (Agent Teams)
     │   └── commit/SKILL.md            ← /commit
     │
-    ├── agents/                        ← Isolated subagents
+    ├── agents/                        ← Subagents + Team Agent teammates
+    │   ├── orchestrator.md            ← Team lead for spec-driven builds
+    │   ├── api-developer.md           ← Backend/API teammate
+    │   ├── frontend-developer.md      ← Frontend/UI teammate
     │   ├── code-reviewer.md
-    │   └── security-auditor.md
+    │   ├── security-auditor.md
+    │   ├── debugger.md
+    │   ├── test-writer.md
+    │   ├── refactorer.md
+    │   └── doc-writer.md
     │
     ├── skills/
     │   └── example-skill/SKILL.md     ← Template for your own skills
     │
     └── hooks/                         ← Event-driven automation
         ├── validate-bash.sh           ← Blocks rm -rf, secret exposure
-        └── auto-format.sh             ← Auto-format after edits
+        ├── auto-format.sh             ← Auto-format after edits
+        ├── teammate-idle.sh           ← Keeps teammates working while tasks remain
+        └── task-completed.sh          ← Quality gate before closing tasks
 ```
 
 ---
@@ -206,6 +221,93 @@ Agents run in isolated context windows — they won't pollute your main session.
 
 ---
 
+## 🚀 Spec-Driven Build (Agent Teams)
+
+Go from spec to working code with a single command. Claude Forge includes a complete **spec-driven development** workflow powered by Agent Teams.
+
+### The flow
+
+```
+/spec <feature>          →  Interview → SPEC.md
+/spec-build              →  SPEC.md → working project
+```
+
+### What happens when you run `/spec-build`
+
+```
+┌─────────────────┐
+│   Orchestrator   │  Reads spec, creates API contract,
+│   (team lead)    │  breaks work into tasks with deps
+└────────┬────────┘
+         │
+   ┌─────┼─────────────┬──────────────┐
+   ▼     ▼             ▼              ▼
+┌──────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│ API  │ │ Frontend │ │  Tests   │ │  Review  │
+│ Dev  │ │ Dev      │ │  Writer  │ │  & QA    │
+└──────┘ └──────────┘ └──────────┘ └──────────┘
+  Phase 1   Phase 1     Phase 2      Phase 3
+```
+
+1. **Orchestrator** reads the spec and creates `docs/api-contract.md` — the shared contract
+2. **api-developer** + **frontend-developer** work in parallel (different directories, same contract)
+3. **test-writer** covers the implemented code
+4. **code-reviewer** + **security-auditor** validate everything
+
+### Enabling
+
+Set in `.claude/settings.json` (already scaffolded, just flip to `"1"`):
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}
+```
+
+> Requires Claude Code v2.1.32+. Feature is **experimental**.
+
+### Permissions — plug-and-play
+
+Settings come pre-configured so agents can work autonomously:
+
+| Allowed (safe, reversible) | Blocked (destructive, irreversible) |
+|---|---|
+| Read, Write, Edit, Glob, Grep | `rm -rf /`, `rm -rf ~`, `rm -rf .` |
+| git add, commit, checkout, diff, log | `git push`, `git push --force`, `git reset --hard` |
+| npm/pip/cargo run, test, install | `curl -d` (outbound data), `wget --post` |
+| mkdir, cp, mv, touch, chmod | Reading `.env` files |
+
+Stack-specific tools (pytest, npx, cargo, etc.) are auto-merged when you pick a stack.
+
+### Using agents individually
+
+All 9 agents also work as standalone subagents or manual teammates:
+
+```
+Spawn a teammate using the code-reviewer agent to review the auth module.
+Spawn a teammate using the test-writer agent to cover the new endpoints.
+Spawn a teammate using the security-auditor agent to audit the payment flow.
+```
+
+### Team hooks
+
+| Hook | What it does |
+|---|---|
+| `teammate-idle.sh` | Keeps teammates working while pending tasks remain |
+| `task-completed.sh` | Quality gate — uncomment to require tests/lint before closing tasks |
+
+### Best practices
+
+- Start with **3-5 teammates** — beyond that, coordination overhead outweighs gains
+- Aim for **5-6 tasks per teammate** to keep everyone productive
+- **Avoid two teammates editing the same file** — no merge conflict protection
+- Use `/spec` first to generate a thorough spec — better spec = better output
+- Clean up via the lead: `Clean up the team`
+
+---
+
 ## 🧠 Design Principles
 
 These templates follow [official Anthropic best practices](https://code.claude.com/docs/en/best-practices):
@@ -218,6 +320,30 @@ These templates follow [official Anthropic best practices](https://code.claude.c
 | **Git-friendly** | Team files committed. Personal files (`.local.md`, `.local.json`) gitignored. |
 | **Non-destructive** | Never overwrites existing files. Safe to re-run on any project. |
 | **~150 instruction budget** | Claude Code's system prompt uses ~50 instructions. Your config shares the rest. |
+
+---
+
+## ❓ Troubleshooting
+
+<details>
+<summary><strong>Missing agents after update</strong></summary>
+
+If you update Claude Forge and re-run `/claude-forge`, new templates won't appear because `safe_copy` never overwrites existing files. To pick up new agents (or any new templates):
+
+```bash
+# Re-install the skill (re-run the installer)
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
+
+# Remove the old agents directory so the new templates are copied
+rm -rf your-project/.claude/agents/
+
+# Re-run inside Claude Code
+/claude-forge flask-next
+```
+
+The same applies to any new template files (rules, skills, hooks).
+
+</details>
 
 ---
 

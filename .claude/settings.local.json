@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:docs.anthropic.com)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:claudefa.st)",
+      "Bash(chmod:*)",
+      "Bash(ls templates/agents/*.md)",
+      "Bash(ls templates/skills/*/SKILL.md)",
+      "Bash(ls templates/hooks/*.sh)"
     ]
   }
 }

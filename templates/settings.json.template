@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "0"
+  },
   "permissions": {
     "allow": [
       "Read",
@@ -12,19 +15,40 @@
       "Bash(git log *)",
       "Bash(git branch *)",
       "Bash(git stash *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
       "Bash(cat *)",
       "Bash(head *)",
       "Bash(tail *)",
       "Bash(wc *)",
       "Bash(find *)",
-      "Bash(ls *)"
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(touch *)",
+      "Bash(chmod *)",
+      "Bash(echo *)",
+      "Bash(test *)",
+      "Bash([ *)",
+      "Bash(which *)",
+      "Bash(env *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(diff *)",
+      "Bash(tree *)",
+      "Bash(jq *)"
     ],
     "deny": [
       "Bash(rm -rf /)",
       "Bash(rm -rf ~)",
       "Bash(rm -rf .)",
-      "Bash(curl *)",
-      "Bash(wget *)",
+      "Bash(git push *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(curl * -d *)",
+      "Bash(wget * --post *)",
       "Read(.env)",
       "Read(.env.*)"
     ]
@@ -50,6 +74,30 @@
             "type": "command",
             "command": ".claude/hooks/auto-format.sh",
             "timeout": 10
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/teammate-idle.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/task-completed.sh",
+            "timeout": 15
           }
         ]
       }

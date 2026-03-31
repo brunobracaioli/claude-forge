@@ -2,14 +2,29 @@
   "permissions": {
     "allow": [
       "Bash(python *)",
+      "Bash(python3 *)",
       "Bash(python -m pytest *)",
       "Bash(python -m mypy *)",
       "Bash(python -m ruff *)",
+      "Bash(python -m black *)",
+      "Bash(python -m isort *)",
       "Bash(python -m alembic *)",
+      "Bash(python -m flask *)",
+      "Bash(python -m django *)",
+      "Bash(python -m uvicorn *)",
       "Bash(pip install *)",
       "Bash(pip install * --break-system-packages)",
+      "Bash(pip freeze *)",
       "Bash(poetry *)",
-      "Bash(uv *)"
+      "Bash(uv *)",
+      "Bash(pytest *)",
+      "Bash(ruff *)",
+      "Bash(black *)",
+      "Bash(isort *)",
+      "Bash(mypy *)",
+      "Bash(alembic *)",
+      "Bash(gunicorn *)",
+      "Bash(uvicorn *)"
     ],
     "deny": []
   }

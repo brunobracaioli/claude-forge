@@ -3,7 +3,10 @@
     "allow": [
       "Bash(cargo *)",
       "Bash(rustup *)",
-      "Bash(rustc *)"
+      "Bash(rustc *)",
+      "Bash(rustfmt *)",
+      "Bash(clippy-driver *)",
+      "Bash(cargo-watch *)"
     ],
     "deny": []
   }

@@ -97,7 +97,7 @@ echo ""
 # --- Create directory structure ---
 log "Creating .claude/ structure..."
 mkdir -p "$PROJECT_ROOT/.claude/"{rules,agents,hooks}
-mkdir -p "$PROJECT_ROOT/.claude/skills/"{commit,fix-issue,review,spec,example-skill}
+mkdir -p "$PROJECT_ROOT/.claude/skills/"{commit,fix-issue,review,spec,spec-build,example-skill}
 
 # --- Base templates ---
 log "Copying base templates..."
@@ -194,10 +194,11 @@ find "$PROJECT_ROOT/.claude" -type f | sort | sed "s|$PROJECT_ROOT/||"
 echo ""
 
 bold "Available skills:"
-echo "  /review     — Code review current branch"
-echo "  /fix-issue  — Fix a GitHub issue by number"
-echo "  /spec       — Interview → write spec"
-echo "  /commit     — Conventional commit"
+echo "  /review      — Code review current branch"
+echo "  /fix-issue   — Fix a GitHub issue by number"
+echo "  /spec        — Interview → write spec"
+echo "  /spec-build  — Build project from spec (Agent Teams)"
+echo "  /commit      — Conventional commit"
 echo ""
 
 bold "Available agents:"
@@ -216,9 +217,17 @@ for agent_file in "$PROJECT_ROOT/.claude/agents"/*.md; do
 done
 echo ""
 
+bold "Spec-Driven Build (Agent Teams):"
+echo "  1. /spec <feature>       — Generate a spec via interview"
+echo "  2. /spec-build            — Build the project from spec using multi-agent team"
+echo "  Requires: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=\"1\" in settings.json"
+echo "  Agents: orchestrator, api-developer, frontend-developer + reviewers"
+echo ""
+
 warn "Next steps:"
 warn "  1. Edit CLAUDE.md — fill in [CUSTOMIZE] sections"
 warn "  2. Review .claude/settings.json — adjust permissions for your stack"
 warn "  3. Uncomment your formatter in .claude/hooks/auto-format.sh"
 warn "  4. Delete rules you don't need from .claude/rules/"
+warn "  5. To use Agent Teams: set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS to \"1\""
 echo ""

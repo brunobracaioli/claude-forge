@@ -4,9 +4,20 @@
       "Bash(npm run *)",
       "Bash(npm test *)",
       "Bash(npm install *)",
+      "Bash(npm ci *)",
+      "Bash(npm exec *)",
       "Bash(npx *)",
       "Bash(pnpm *)",
-      "Bash(bun *)"
+      "Bash(bun *)",
+      "Bash(node *)",
+      "Bash(tsx *)",
+      "Bash(tsc *)",
+      "Bash(eslint *)",
+      "Bash(prettier *)",
+      "Bash(vitest *)",
+      "Bash(jest *)",
+      "Bash(playwright *)",
+      "Bash(next *)"
     ],
     "deny": []
   }
