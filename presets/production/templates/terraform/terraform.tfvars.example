@@ -1,0 +1,11 @@
+# =============================================================================
+# Example terraform.tfvars — Copy to terraform.tfvars and customize
+# NEVER commit terraform.tfvars (it's gitignored)
+# =============================================================================
+
+project_name   = "my-project"
+environment    = "dev"
+aws_region     = "us-east-1"
+vpc_cidr       = "10.0.0.0/16"
+db_instance_class = "db.t3.micro"
+container_port = 3000

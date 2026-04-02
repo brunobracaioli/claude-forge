@@ -194,8 +194,17 @@ if [ -d "$PRESET_DIR" ] && [ "$PRESET" != "none" ]; then
     fi
   fi
 
-  # Append preset architecture snippet to CLAUDE.md (after stack creates it)
-  # Will be appended after CLAUDE.md is finalized below
+  # Copy preset IaC/CI templates to project root
+  if [ -d "$PRESET_DIR/templates" ]; then
+    log "Copying $PRESET IaC/CI templates..."
+    # Recursively copy template files, preserving directory structure
+    (cd "$PRESET_DIR/templates" && find . -type f) | while read -r file; do
+      file="${file#./}"
+      src="$PRESET_DIR/templates/$file"
+      dst="$PROJECT_ROOT/$file"
+      safe_copy "$src" "$dst"
+    done
+  fi
 fi
 
 # Generic CLAUDE.md fallback
@@ -274,6 +283,21 @@ echo "  2. /spec-build            — Build the project from spec using multi-ag
 echo "  Requires: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=\"1\" in settings.json"
 echo "  Agents: orchestrator, api-developer, frontend-developer + reviewers"
 echo ""
+
+if [ "$PRESET" = "production" ]; then
+  bold "Infrastructure as Code (Production preset):"
+  echo "  terraform/              — VPC + RDS + ECS Fargate (modular)"
+  echo "  Dockerfile              — Multi-stage build, non-root, healthcheck"
+  echo "  docker-compose.yml      — Local dev with Postgres + Redis + LocalStack"
+  echo "  .github/workflows/ci.yml    — Lint + test + SAST + Docker build"
+  echo "  .github/workflows/deploy.yml — ECR push + ECS deploy on merge"
+  echo ""
+elif [ "$PRESET" = "mvp" ]; then
+  bold "Infrastructure (MVP preset):"
+  echo "  docker-compose.yml      — Local dev with Postgres + Redis"
+  echo "  .github/workflows/ci.yml — Lint + test + build"
+  echo ""
+fi
 
 bold "Security hooks (active by default):"
 echo "  secret-scan        — Blocks commits with hardcoded secrets (gitleaks or regex)"
