@@ -224,6 +224,12 @@ echo "  Requires: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=\"1\" in settings.json"
 echo "  Agents: orchestrator, api-developer, frontend-developer + reviewers"
 echo ""
 
+bold "Security hooks (active by default):"
+echo "  secret-scan        — Blocks commits with hardcoded secrets (gitleaks or regex)"
+echo "  sast-scan          — Flags SQL injection, eval(), weak crypto, disabled TLS"
+echo "  dependency-check   — Warns on insecure deps (npm audit / pip-audit / cargo audit)"
+echo ""
+
 warn "Next steps:"
 warn "  1. Edit CLAUDE.md — fill in [CUSTOMIZE] sections"
 warn "  2. Review .claude/settings.json — adjust permissions for your stack"
