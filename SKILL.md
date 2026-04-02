@@ -9,8 +9,9 @@ description: >
   variation asking to set up Claude Code configuration for a new or existing codebase.
   Also trigger when the user asks to "create CLAUDE.md template", "setup skills", or wants a replicable project skeleton. Supports stack-specific variants
   including flask-next, node, python, react, and rust.
+  Supports architecture presets: mvp (monolith, Supabase+Vercel) or production (multi-service, Terraform, AWS/GCP).
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-argument-hint: "[stack: flask-next | node | python | react | rust | generic]"
+argument-hint: "[stack] [--preset mvp|production]"
 ---
 
 # Project Bootstrap Skill
@@ -37,10 +38,18 @@ If detection is ambiguous, ask ONE question:
 
 > What's the primary stack? Options: flask-next, node, python, react, rust, generic
 
+### Step 1.5: Detect or Ask for Preset
+
+If the user specified `--preset mvp` or `--preset production`, use it.
+
+Otherwise, ask ONE question:
+
+> Do you want an architecture preset? Options: mvp (monolith, Supabase+Vercel), production (multi-service, Terraform, AWS/GCP), or none (skip)
+
 ### Step 2: Run the Bootstrap Script
 
 ```bash
-bash "${CLAUDE_SKILL_DIR}/scripts/bootstrap.sh" "$(pwd)" "<detected-or-specified-stack>"
+bash "${CLAUDE_SKILL_DIR}/scripts/bootstrap.sh" "$(pwd)" "<stack>" "<preset>"
 ```
 
 The script:

@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 # =============================================================================
 # project-bootstrap: Scaffold .claude/ directory structure
-# Usage: bootstrap.sh <project_root> [stack]
+# Usage: bootstrap.sh <project_root> [stack] [preset]
 # Stacks: flask-next | node | python | react | rust | generic
+# Presets: mvp | production | none (default: none)
 # =============================================================================
 set -euo pipefail
 
 PROJECT_ROOT="${1:-.}"
 STACK="${2:-generic}"
+PRESET="${3:-none}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "$SCRIPT_DIR")"
 TEMPLATE_DIR="$SKILL_DIR/templates"
 STACK_DIR="$SKILL_DIR/stacks/$STACK"
+PRESET_DIR="$SKILL_DIR/presets/$PRESET"
 
 # --- Colors ---
 GREEN='\033[0;32m'
@@ -60,6 +63,14 @@ fi
 
 STACK_DIR="$SKILL_DIR/stacks/$STACK"
 
+# Validate preset
+VALID_PRESETS="mvp production none"
+if ! echo "$VALID_PRESETS" | grep -qw "$PRESET"; then
+  warn "Unknown preset '$PRESET'. Using 'none'."
+  PRESET="none"
+fi
+PRESET_DIR="$SKILL_DIR/presets/$PRESET"
+
 # --- Safe copy: never overwrite ---
 safe_copy() {
   local src="$1" dst="$2"
@@ -91,6 +102,7 @@ echo ""
 bold "╔══════════════════════════════════════════════════════╗"
 bold "║     Claude Code Project Bootstrap                   ║"
 bold "║     Stack: $STACK$(printf '%*s' $((36 - ${#STACK})) '')║"
+bold "║     Preset: $PRESET$(printf '%*s' $((35 - ${#PRESET})) '')║"
 bold "╚══════════════════════════════════════════════════════╝"
 echo ""
 
@@ -158,9 +170,48 @@ if [ -d "$STACK_DIR" ] && [ "$STACK" != "generic" ]; then
   fi
 fi
 
+# --- Preset overlay ---
+if [ -d "$PRESET_DIR" ] && [ "$PRESET" != "none" ]; then
+  log "Applying architecture preset: $PRESET..."
+
+  # Preset-specific rules
+  copy_dir "$PRESET_DIR/rules" "$PROJECT_ROOT/.claude/rules"
+
+  # Preset-specific settings override (merge permissions)
+  if [ -f "$PRESET_DIR/settings.json.override" ] && [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
+    if command -v jq &>/dev/null; then
+      local_settings="$PROJECT_ROOT/.claude/settings.json"
+      override="$PRESET_DIR/settings.json.override"
+      merged=$(jq -s '
+        .[0].permissions.allow = (.[0].permissions.allow + .[1].permissions.allow | unique) |
+        .[0].permissions.deny = (.[0].permissions.deny + (.[1].permissions.deny // []) | unique) |
+        .[0]
+      ' "$local_settings" "$override")
+      echo "$merged" > "$local_settings"
+      log "Merged preset permissions into settings.json"
+    else
+      warn "jq not found — preset permissions not auto-merged. Merge manually."
+    fi
+  fi
+
+  # Append preset architecture snippet to CLAUDE.md (after stack creates it)
+  # Will be appended after CLAUDE.md is finalized below
+fi
+
 # Generic CLAUDE.md fallback
 if [ ! -f "$PROJECT_ROOT/CLAUDE.md" ]; then
   safe_copy "$TEMPLATE_DIR/CLAUDE.md.template" "$PROJECT_ROOT/CLAUDE.md" || true
+fi
+
+# --- Append preset snippet to CLAUDE.md ---
+if [ -f "$PRESET_DIR/CLAUDE.md.snippet" ] && [ -f "$PROJECT_ROOT/CLAUDE.md" ]; then
+  if ! grep -q "Architecture.*Preset" "$PROJECT_ROOT/CLAUDE.md" 2>/dev/null; then
+    echo "" >> "$PROJECT_ROOT/CLAUDE.md"
+    cat "$PRESET_DIR/CLAUDE.md.snippet" >> "$PROJECT_ROOT/CLAUDE.md"
+    log "Appended $PRESET preset architecture section to CLAUDE.md"
+  else
+    warn "SKIP: CLAUDE.md already has an architecture preset section"
+  fi
 fi
 
 # --- .gitignore for .claude/ ---
@@ -184,7 +235,7 @@ fi
 # --- Summary ---
 echo ""
 info "════════════════════════════════════════════════════════"
-info "  Bootstrap complete! Stack: $STACK"
+info "  Bootstrap complete! Stack: $STACK | Preset: $PRESET"
 info "════════════════════════════════════════════════════════"
 echo ""
 

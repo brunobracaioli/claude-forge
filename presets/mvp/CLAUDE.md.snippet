@@ -1,0 +1,12 @@
+## Architecture (MVP Preset)
+
+Monolithic architecture optimized for speed and low cost.
+
+- **Deploy target**: Vercel/Netlify (frontend + serverless) + Supabase (backend)
+- **Database**: Supabase Postgres with RLS policies
+- **Auth**: Supabase Auth (no custom auth middleware)
+- **Cache/Queue**: Upstash Redis (only when needed)
+- **No Terraform, no Docker in prod** — platform-managed infra only
+- **Vertical slices**: each feature is route → service → data access
+
+See `.claude/rules/architecture.md` for full guidelines.

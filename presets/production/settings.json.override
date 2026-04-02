@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(terraform *)",
+      "Bash(terraform init *)",
+      "Bash(terraform plan *)",
+      "Bash(terraform validate *)",
+      "Bash(terraform fmt *)",
+      "Bash(docker build *)",
+      "Bash(docker compose *)",
+      "Bash(docker-compose *)",
+      "Bash(docker ps *)",
+      "Bash(docker logs *)",
+      "Bash(docker images *)",
+      "Bash(trivy *)",
+      "Bash(grype *)",
+      "Bash(snyk *)"
+    ],
+    "deny": [
+      "Bash(terraform apply *)",
+      "Bash(terraform destroy *)",
+      "Bash(docker push *)",
+      "Bash(docker rm -f *)"
+    ]
+  }
+}
