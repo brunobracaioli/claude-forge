@@ -109,7 +109,8 @@ echo ""
 # --- Create directory structure ---
 log "Creating .claude/ structure..."
 mkdir -p "$PROJECT_ROOT/.claude/"{rules,agents,hooks}
-mkdir -p "$PROJECT_ROOT/.claude/skills/"{commit,fix-issue,review,spec,spec-build,example-skill}
+mkdir -p "$PROJECT_ROOT/.claude/skills/"{commit,fix-issue,review,spec,spec-build,checkpoint,security-audit,infra-audit,pentest-recon,example-skill}
+mkdir -p "$PROJECT_ROOT/.claude/checkpoints"
 
 # --- Base templates ---
 log "Copying base templates..."
@@ -254,11 +255,15 @@ find "$PROJECT_ROOT/.claude" -type f | sort | sed "s|$PROJECT_ROOT/||"
 echo ""
 
 bold "Available skills:"
-echo "  /review      — Code review current branch"
-echo "  /fix-issue   — Fix a GitHub issue by number"
-echo "  /spec        — Interview → write spec"
-echo "  /spec-build  — Build project from spec (Agent Teams)"
-echo "  /commit      — Conventional commit"
+echo "  /review         — Code review current branch"
+echo "  /fix-issue      — Fix a GitHub issue by number"
+echo "  /spec           — Interview → write spec"
+echo "  /spec-build     — Build project from spec (Agent Teams)"
+echo "  /commit         — Conventional commit"
+echo "  /checkpoint     — Save verified snapshot (tests + tag + context)"
+echo "  /security-audit — OWASP Top 10 security review"
+echo "  /infra-audit    — Terraform/Docker/CI config review"
+echo "  /pentest-recon  — Attack surface mapping (passive, codebase-only)"
 echo ""
 
 bold "Available agents:"

@@ -41,6 +41,10 @@ templates/                 # Base templates copied to every project
     review/SKILL.md        # /review — code review (disable-model-invocation)
     spec/SKILL.md          # /spec — feature spec interview (disable-model-invocation)
     spec-build/SKILL.md    # /spec-build — build project from spec using Agent Teams
+    checkpoint/SKILL.md    # /checkpoint — dev snapshot (tests + tag + context)
+    security-audit/SKILL.md # /security-audit — OWASP Top 10 review
+    infra-audit/SKILL.md   # /infra-audit — Terraform/Docker/CI review
+    pentest-recon/SKILL.md # /pentest-recon — attack surface mapping
     example-skill/SKILL.md # Skeleton for user-defined skills
   agents/                  # code-reviewer, debugger, test-writer, refactorer, doc-writer, security-auditor, orchestrator, api-developer, frontend-developer, ux-designer, frontend-design
   hooks/                   # validate-bash, auto-format, teammate-idle, task-completed, secret-scan, sast-scan, dependency-check
