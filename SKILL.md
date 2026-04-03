@@ -39,8 +39,8 @@ Scaffold a complete `.claude/` directory with production-ready templates, securi
 | `/infra-audit` | Terraform, Docker, CI/CD configuration review |
 | `/pentest-recon` | Passive attack surface mapping from codebase |
 
-### Agents (12 total)
-code-reviewer, debugger, test-writer, refactorer, doc-writer, security-auditor, orchestrator, api-developer, frontend-developer, ux-designer, frontend-design
+### Agents (13 total)
+code-reviewer, debugger, test-writer, refactorer, doc-writer, security-auditor, orchestrator, api-developer, frontend-developer, ux-designer, frontend-design, web-researcher
 
 ### Hooks (7 total)
 | Hook | Trigger | Action |

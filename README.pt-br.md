@@ -53,7 +53,7 @@ Um unico comando cria **60+ arquivos** em 8 categorias:
 | 📄 | **CLAUDE.md** | Template do stack com marcadores `[CUSTOMIZE]`, menos de 200 linhas |
 | 📏 | **Rules** (5+) | `code-style` . `testing` . `security` . `git-workflow` . `agent-creation` + regras do stack + preset |
 | ⚡ | **Skills** (10) | `/review` . `/fix-issue` . `/spec` . `/spec-build` . `/commit` . `/checkpoint` . `/security-audit` . `/infra-audit` . `/pentest-recon` |
-| 🤖 | **Agents** (12) | `code-reviewer` . `security-auditor` . `debugger` . `test-writer` . `refactorer` . `doc-writer` . `orchestrator` . `api-developer` . `frontend-developer` . `ux-designer` . `frontend-design` |
+| 🤖 | **Agents** (13) | `code-reviewer` . `security-auditor` . `debugger` . `test-writer` . `refactorer` . `doc-writer` . `orchestrator` . `api-developer` . `frontend-developer` . `ux-designer` . `frontend-design` . `web-researcher` |
 | 🔒 | **Hooks** (7) | `validate-bash` . `secret-scan` . `sast-scan` . `dependency-check` . `auto-format` . `teammate-idle` . `task-completed` |
 | ⚙️ | **Settings** | Permissoes sensatas com todos os hooks configurados |
 | 🏗️ | **Presets** | `mvp` (monolito, Supabase+Vercel) ou `production` (Terraform, AWS, Docker, CI/CD) |
@@ -200,7 +200,7 @@ seu-projeto/
     │   ├── pentest-recon/SKILL.md     <- /pentest-recon
     │   └── example-skill/SKILL.md
     │
-    ├── agents/                        <- 12 agentes
+    ├── agents/                        <- 13 agentes
     │   ├── orchestrator.md
     │   ├── api-developer.md
     │   ├── frontend-developer.md
@@ -211,7 +211,8 @@ seu-projeto/
     │   ├── debugger.md
     │   ├── test-writer.md
     │   ├── refactorer.md
-    │   └── doc-writer.md
+    │   ├── doc-writer.md
+    │   └── web-researcher.md
     │
     └── hooks/                         <- 7 hooks por evento
         ├── validate-bash.sh
@@ -345,13 +346,14 @@ Ferramentas do preset (terraform, docker, trivy, etc.) sao auto-mergeadas quando
 
 ### Usando agentes individualmente
 
-Todos os 12 agentes tambem funcionam como subagentes standalone ou teammates manuais:
+Todos os 13 agentes tambem funcionam como subagentes standalone ou teammates manuais:
 
 ```
 Spawn a teammate using the code-reviewer agent to review the auth module.
 Spawn a teammate using the test-writer agent to cover the new endpoints.
 Spawn a teammate using the security-auditor agent to audit the payment flow.
 Spawn a teammate using the ux-designer agent to review the onboarding flow.
+Spawn a teammate using the web-researcher agent to find the best auth library for Next.js.
 ```
 
 ### Hooks do time
