@@ -48,9 +48,10 @@ templates/                 # Base templates copied to every project
     infra-audit/SKILL.md   # /infra-audit — Terraform/Docker/CI review
     pentest-recon/SKILL.md # /pentest-recon — passive attack surface mapping
     example-skill/SKILL.md # Skeleton for user-defined skills
-  agents/                  # 13 agents: code-reviewer, debugger, test-writer, refactorer,
+  agents/                  # 15 agents: code-reviewer, debugger, test-writer, refactorer,
                            #   doc-writer, security-auditor, orchestrator, api-developer,
-                           #   frontend-developer, ux-designer, frontend-design, web-researcher
+                           #   frontend-developer, ux-designer, frontend-design, web-researcher,
+                           #   codebase-navigator, project-planner
   hooks/                   # 7 hooks: validate-bash, auto-format, teammate-idle,
                            #   task-completed, secret-scan, sast-scan, dependency-check
 presets/                   # Architecture presets (orthogonal to stacks)

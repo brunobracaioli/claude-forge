@@ -53,7 +53,7 @@ A single command creates **60+ files** across 8 categories:
 | 📄 | **CLAUDE.md** | Stack-specific template with `[CUSTOMIZE]` markers, under 200 lines |
 | 📏 | **Rules** (5+) | `code-style` · `testing` · `security` · `git-workflow` · `agent-creation` + stack + preset rules |
 | ⚡ | **Skills** (10) | `/review` · `/fix-issue` · `/spec` · `/spec-build` · `/commit` · `/checkpoint` · `/security-audit` · `/infra-audit` · `/pentest-recon` |
-| 🤖 | **Agents** (13) | `code-reviewer` · `security-auditor` · `debugger` · `test-writer` · `refactorer` · `doc-writer` · `orchestrator` · `api-developer` · `frontend-developer` · `ux-designer` · `frontend-design` · `web-researcher` |
+| 🤖 | **Agents** (15) | `code-reviewer` · `security-auditor` · `debugger` · `test-writer` · `refactorer` · `doc-writer` · `orchestrator` · `api-developer` · `frontend-developer` · `ux-designer` · `frontend-design` · `web-researcher` · `codebase-navigator` · `project-planner` |
 | 🔒 | **Hooks** (7) | `validate-bash` · `secret-scan` · `sast-scan` · `dependency-check` · `auto-format` · `teammate-idle` · `task-completed` |
 | ⚙️ | **Settings** | Sensible permissions with all hooks wired out-of-the-box |
 | 🏗️ | **Presets** | `mvp` (monolith, Supabase+Vercel) or `production` (Terraform, AWS, Docker, CI/CD) |
@@ -200,7 +200,7 @@ your-project/
     │   ├── pentest-recon/SKILL.md     ← /pentest-recon
     │   └── example-skill/SKILL.md     ← Template for your own
     │
-    ├── agents/                        ← 13 agents
+    ├── agents/                        ← 15 agents
     │   ├── orchestrator.md
     │   ├── api-developer.md
     │   ├── frontend-developer.md
@@ -212,7 +212,9 @@ your-project/
     │   ├── test-writer.md
     │   ├── refactorer.md
     │   ├── doc-writer.md
-    │   └── web-researcher.md
+    │   ├── web-researcher.md
+    │   ├── codebase-navigator.md
+    │   └── project-planner.md
     │
     └── hooks/                         ← 7 event-driven hooks
         ├── validate-bash.sh
@@ -346,7 +348,7 @@ Preset-specific tools (terraform, docker, trivy, etc.) are auto-merged when you 
 
 ### Using agents individually
 
-All 13 agents also work as standalone subagents or manual teammates:
+All 15 agents also work as standalone subagents or manual teammates:
 
 ```
 Spawn a teammate using the code-reviewer agent to review the auth module.
@@ -354,6 +356,8 @@ Spawn a teammate using the test-writer agent to cover the new endpoints.
 Spawn a teammate using the security-auditor agent to audit the payment flow.
 Spawn a teammate using the ux-designer agent to review the onboarding flow.
 Spawn a teammate using the web-researcher agent to find the best auth library for Next.js.
+Spawn a teammate using the codebase-navigator agent to map the auth module dependencies.
+Spawn a teammate using the project-planner agent to plan the payments feature.
 ```
 
 ### Team hooks
