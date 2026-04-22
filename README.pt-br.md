@@ -26,7 +26,7 @@
 
 ```bash
 # Instale uma vez (skill global)
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
 
 # Use em qualquer projeto
 cd seu-projeto
@@ -41,6 +41,50 @@ Dentro do Claude Code:
 Ou peca em linguagem natural:
 
 > *"Monte a estrutura do projeto com preset de producao"*
+
+**Voltando depois de um upgrade?** Rode com `--update` e todo template nao modificado e atualizado no lugar; tudo que voce editou e preservado e a versao nova aparece ao lado como `<arquivo>.new`:
+
+```
+/claude-forge react --preset mvp --update
+```
+
+---
+
+## 🤖 Instalacao pelo Claude Code *(setup em um colar)*
+
+Nao quer pular entre terminal e editor? Cole o prompt abaixo em qualquer sessao do Claude Code e ele mesmo instala a skill, verifica restart e faz o scaffold.
+
+### Primeira vez em um projeto novo
+
+```text
+Instale o claude-forge e monte a estrutura deste projeto:
+
+1. Rode no terminal:
+   curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
+
+2. Se o comando /claude-forge nao for reconhecido depois da instalacao, reinicie o Claude Code e rode este prompt de novo.
+
+3. Invoque /claude-forge neste projeto. Ele vai detectar o stack sozinho (django, flask-next, go, laravel, node, python, react, rust, generic) e perguntar qual preset aplicar (mvp, production-aws, production-gcp ou none).
+
+4. Quando terminar, me resuma o que foi gerado e liste cada marcador [CUSTOMIZE] que preciso preencher.
+```
+
+### Atualizando um projeto que ja usa claude-forge
+
+```text
+Atualize os templates do claude-forge neste projeto:
+
+1. Rode no terminal:
+   curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
+
+2. Detecte meu stack e preset atuais a partir do CLAUDE.md e de .claude/rules/ (me pergunte se tiver duvida).
+
+3. Rode /claude-forge <stack-detectado> --preset <preset-detectado> --update. Templates nao modificados sao atualizados no lugar; o que eu editei fica preservado e a versao nova cai ao lado como <arquivo>.new.
+
+4. Liste cada arquivo .new criado para eu revisar o diff e fazer o merge.
+```
+
+> **O que acontece de verdade:** o `curl` baixa `install.sh` fixado em `v1.2.1` e instala a skill em `~/.claude/skills/claude-forge/`. Nao precisa sudo. Se preferir fazer a mao, pule para [Instalacao manual](#instalacao).
 
 ---
 
@@ -135,7 +179,7 @@ Escolha uma opcao:
 ### One-liner *(recomendado)*
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
 ```
 
 ### Download manual (sem git)
@@ -432,7 +476,7 @@ Se voce atualizar o Claude Forge e re-rodar `/claude-forge`, novos templates nao
 
 ```bash
 # Re-instale a skill (re-execute o instalador)
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
 
 # Remova os diretorios antigos para os novos templates serem copiados
 rm -rf seu-projeto/.claude/agents/

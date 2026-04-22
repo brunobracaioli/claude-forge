@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
-  <img src="https://img.shields.io/badge/version-1.2.0-10b981.svg?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.2.1-10b981.svg?style=flat-square" alt="Version">
   <img src="https://img.shields.io/badge/stacks-9-f59e0b.svg?style=flat-square" alt="Stacks">
   <img src="https://img.shields.io/badge/presets-3-ef4444.svg?style=flat-square" alt="Presets">
   <img src="https://img.shields.io/badge/templates-100%2B%20files-8b5cf6.svg?style=flat-square" alt="Templates">
@@ -27,7 +27,7 @@
 
 ```bash
 # Install a pinned release (recommended — reproducible)
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.0/install.sh | CLAUDE_FORGE_REF=v1.2.0 bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
 
 # Or track the latest on main (rolling, may include breaking changes)
 curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
@@ -51,6 +51,44 @@ Or just ask naturally:
 ```
 /claude-forge react --preset mvp --update
 ```
+
+---
+
+## 🤖 Install with Claude Code *(one-paste setup)*
+
+Don't want to juggle terminal + editor? Paste the prompt below into any Claude Code session and it will install the skill, restart-check, and scaffold this project for you.
+
+### Fresh install on a new project
+
+```text
+Install claude-forge and bootstrap this project:
+
+1. Run in the terminal:
+   curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
+
+2. If the /claude-forge command isn't recognized after install, restart Claude Code and run me again.
+
+3. Invoke /claude-forge in this project. It auto-detects the stack (django, flask-next, go, laravel, node, python, react, rust, generic) and will ask which preset to apply (mvp, production-aws, production-gcp, or none).
+
+4. Once scaffolding is done, summarize what was generated and list every [CUSTOMIZE] marker I need to fill in.
+```
+
+### Updating templates in an existing project
+
+```text
+Update claude-forge templates in this project:
+
+1. Run in the terminal:
+   curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
+
+2. Detect my current stack and preset from CLAUDE.md plus the contents of .claude/rules/ (ask me to confirm if ambiguous).
+
+3. Run /claude-forge <detected-stack> --preset <detected-preset> --update. Unmodified templates refresh in place; anything I edited locally is preserved and the new version is written alongside as <file>.new.
+
+4. List every .new sidecar you created so I can diff and merge them.
+```
+
+> **What actually runs:** the `curl` fetches `install.sh` pinned to `v1.2.1` and installs the skill into `~/.claude/skills/claude-forge/`. No admin privileges needed. Skip straight to [Manual Install](#-installation) if you prefer doing it by hand.
 
 ---
 
@@ -160,7 +198,7 @@ Choose one:
 ### One-liner — pinned *(recommended)*
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.0/install.sh | CLAUDE_FORGE_REF=v1.2.0 bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
 ```
 
 Pinning to a tagged release gives reproducible installs and isolates you from breaking changes on `main`. See [CHANGELOG.md](./CHANGELOG.md) for releases.
@@ -174,17 +212,17 @@ curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/in
 ### Pin via flag
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash -s -- --ref v1.2.0
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash -s -- --ref v1.2.1
 ```
 
 ### Manual download (no git required)
 
 ```bash
-curl -sL https://github.com/brunobracaioli/claude-forge/archive/v1.2.0.tar.gz | tar xz -C /tmp
+curl -sL https://github.com/brunobracaioli/claude-forge/archive/v1.2.1.tar.gz | tar xz -C /tmp
 mkdir -p ~/.claude/skills/claude-forge
-cp -r /tmp/claude-forge-1.2.0/{SKILL.md,scripts,templates,stacks,presets,VERSION,CHANGELOG.md,plugin.json} ~/.claude/skills/claude-forge/
+cp -r /tmp/claude-forge-1.2.1/{SKILL.md,scripts,templates,stacks,presets,VERSION,CHANGELOG.md,plugin.json} ~/.claude/skills/claude-forge/
 chmod +x ~/.claude/skills/claude-forge/scripts/*.sh
-rm -rf /tmp/claude-forge-1.2.0
+rm -rf /tmp/claude-forge-1.2.1
 ```
 
 ### Claude Code Plugin
@@ -471,7 +509,7 @@ Re-installed the skill and want new templates in an existing project? Use `--upd
 
 ```bash
 # 1. Re-install the skill at the new version
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.0/install.sh | CLAUDE_FORGE_REF=v1.2.0 bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.1/install.sh | CLAUDE_FORGE_REF=v1.2.1 bash
 
 # 2. Re-run in your project
 /claude-forge react --preset mvp --update
