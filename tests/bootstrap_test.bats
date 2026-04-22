@@ -75,7 +75,8 @@ teardown() {
   bash "$BOOTSTRAP" "$TEST_DIR" react none >/dev/null
   run bash "$BOOTSTRAP" "$TEST_DIR" react none
   [ "$status" -eq 0 ]
-  echo "$output" | grep -q "SKIP (exists)"
+  # At least one SKIP expected — the rules/ files from the first run are still there
+  [[ "$output" == *"SKIP (exists)"* ]]
 }
 
 @test "--update: unmodified files refreshed in-place" {

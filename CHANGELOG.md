@@ -6,6 +6,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-04-22
+
+### Fixed
+- `scripts/bootstrap.sh`: `safe_copy` now returns `0` when skipping an existing file (previously returned `1`). Under `set -euo pipefail`, the non-zero return could abort the script mid-loop on re-run without `--update`, depending on which file was last iterated. Caught by the `bats` re-run-without-update regression test in CI.
+- `tests/bootstrap_test.bats`: tightened the re-run assertion to use bash's `[[ == *"SKIP"* ]]` pattern match instead of a piped `grep -q`, which was prone to SIGPIPE under `set -e` environments.
+
 ## [1.2.0] - 2026-04-22
 
 ### Added
@@ -72,6 +78,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this
 - Security-by-default: `secret-scan`, `sast-scan`, `dependency-check` active with no opt-in required.
 - Bilingual documentation (PT-BR / EN).
 
-[Unreleased]: https://github.com/brunobracaioli/claude-forge/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/brunobracaioli/claude-forge/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/brunobracaioli/claude-forge/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/brunobracaioli/claude-forge/compare/v1.0.0...v1.2.0
 [1.0.0]: https://github.com/brunobracaioli/claude-forge/releases/tag/v1.0.0

@@ -176,7 +176,9 @@ safe_copy() {
       return 0
     fi
     warn "SKIP (exists): $dst"
-    return 1
+    # Skip is intentional, not an error — return 0 so `set -e` won't abort
+    # callers iterating through copy_dir on a re-run.
+    return 0
   else
     mkdir -p "$(dirname "$dst")"
     cp "$src" "$dst"

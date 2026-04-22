@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "sha256 per shipped file — consumed by scripts/bootstrap.sh --update",
-  "version": "1.2.0",
-  "generated_at": "2026-04-22T22:42:38Z",
+  "version": "1.2.1",
+  "generated_at": "2026-04-22T22:50:38Z",
   "files": {
     "presets/mvp/CLAUDE.md.snippet": "sha256:1055cde983404567b74ef59b722b33a49c79a611c040b0740ee49524a74a96f7",
     "presets/mvp/rules/architecture.md": "sha256:137769bb4b3be71a2bad4382d728cc9368fb1ad7b4b93855efc060ac7b49144e",
