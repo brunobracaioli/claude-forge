@@ -4,9 +4,10 @@
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
-  <img src="https://img.shields.io/badge/stacks-6-f59e0b.svg?style=flat-square" alt="Stacks">
-  <img src="https://img.shields.io/badge/presets-2-ef4444.svg?style=flat-square" alt="Presets">
-  <img src="https://img.shields.io/badge/templates-60%2B%20files-8b5cf6.svg?style=flat-square" alt="Templates">
+  <img src="https://img.shields.io/badge/version-1.2.0-10b981.svg?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/badge/stacks-9-f59e0b.svg?style=flat-square" alt="Stacks">
+  <img src="https://img.shields.io/badge/presets-3-ef4444.svg?style=flat-square" alt="Presets">
+  <img src="https://img.shields.io/badge/templates-100%2B%20files-8b5cf6.svg?style=flat-square" alt="Templates">
   <img src="https://img.shields.io/badge/claude--code-skill-10b981.svg?style=flat-square" alt="Claude Code Skill">
 </p>
 
@@ -25,7 +26,10 @@
 ## ⚡ Quick Start
 
 ```bash
-# Install once (global skill)
+# Install a pinned release (recommended — reproducible)
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.0/install.sh | CLAUDE_FORGE_REF=v1.2.0 bash
+
+# Or track the latest on main (rolling, may include breaking changes)
 curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
 
 # Use in any project
@@ -42,6 +46,12 @@ Or just ask naturally:
 
 > *"Set up the .claude directory for this project with production preset"*
 
+**Coming back after an upgrade?** Re-run with `--update` and any unmodified template gets refreshed in-place; anything you tweaked is preserved and the new version lands next to it as `<file>.new`:
+
+```
+/claude-forge react --preset mvp --update
+```
+
 ---
 
 ## 🎯 What You Get
@@ -53,7 +63,7 @@ A single command creates **60+ files** across 8 categories:
 | 📄 | **CLAUDE.md** | Stack-specific template with `[CUSTOMIZE]` markers, under 200 lines |
 | 📏 | **Rules** (5+) | `code-style` · `testing` · `security` · `git-workflow` · `agent-creation` + stack + preset rules |
 | ⚡ | **Skills** (10) | `/review` · `/fix-issue` · `/spec` · `/spec-build` · `/commit` · `/checkpoint` · `/security-audit` · `/infra-audit` · `/pentest-recon` |
-| 🤖 | **Agents** (15) | `code-reviewer` · `security-auditor` · `debugger` · `test-writer` · `refactorer` · `doc-writer` · `orchestrator` · `api-developer` · `frontend-developer` · `ux-designer` · `frontend-design` · `web-researcher` · `codebase-navigator` · `project-planner` · `spec-writer` |
+| 🤖 | **Agents** (5 core, 10 extended) | **Core (default):** `code-reviewer` · `debugger` · `test-writer` · `security-auditor` · `orchestrator` · **Extended (`--tier full`):** `refactorer` · `doc-writer` · `api-developer` · `frontend-developer` · `ux-designer` · `frontend-design` · `web-researcher` · `codebase-navigator` · `project-planner` · `spec-writer` |
 | 🔒 | **Hooks** (7) | `validate-bash` · `secret-scan` · `sast-scan` · `dependency-check` · `auto-format` · `teammate-idle` · `task-completed` |
 | ⚙️ | **Settings** | Sensible permissions with all hooks wired out-of-the-box |
 | 🏗️ | **Presets** | `mvp` (monolith, Supabase+Vercel) or `production` (Terraform, AWS, Docker, CI/CD) |
@@ -67,14 +77,17 @@ Auto-detection scans your project files and picks the right preset:
 
 | Stack | Detected By | Extra Rules |
 |:---|:---|:---|
+| **django** | `manage.py` | Django conventions — service layer, mass-assignment guard, migrations in CI |
 | **flask-next** | `requirements.txt` + `next.config.*` | API conventions, Flask patterns |
+| **go** | `go.mod` | Go conventions — error wrapping, context, race-detector in CI |
+| **laravel** | `artisan` | Laravel conventions — FormRequest + Services, `$fillable` discipline, CSRF |
 | **node** | `package.json` | Node/TypeScript conventions |
 | **python** | `requirements.txt` / `pyproject.toml` | Python conventions, type hints |
 | **react** | `next.config.*` (no Python files) | React/Next.js conventions, a11y |
 | **rust** | `Cargo.toml` | Rust conventions, error handling |
 | **generic** | *(fallback)* | Base rules only |
 
-> **Adding a stack is a PR away.** Django, Go, Java/Spring, PHP/Laravel, .NET — [contributions welcome](#-contributing).
+> **Adding a stack is a PR away.** Java/Spring, .NET, Ruby/Rails — [contributions welcome](#-contributing).
 
 ---
 
@@ -85,11 +98,15 @@ Presets are orthogonal to stacks — stack = technology, preset = architecture. 
 | Preset | Architecture | Infra | What Gets Generated |
 |:---|:---|:---|:---|
 | **mvp** | Monolith, fast iteration | Supabase + Vercel + Upstash | `docker-compose.yml`, GitHub Actions CI |
-| **production** | Multi-service, domain-driven | AWS/GCP + Terraform | `terraform/` (VPC+RDS+ECS), `Dockerfile`, `docker-compose.yml`, CI+Deploy pipelines |
+| **production-aws** | Multi-service, domain-driven | AWS + Terraform | `terraform/` (VPC + RDS + ECS Fargate), `Dockerfile`, `docker-compose.yml` (LocalStack), CI + ECR/ECS deploy |
+| **production-gcp** | Multi-service, domain-driven | GCP + Terraform | `terraform/` (VPC + Cloud SQL + Cloud Run), `Dockerfile`, `docker-compose.yml`, CI + Cloud Run deploy via **Workload Identity Federation** (no JSON keys) |
 | **none** | *(default)* | No infra opinion | Only `.claude/` structure |
 
+> `production` (without suffix) is a deprecated alias for `production-aws`. It still works in v1.2 but will be removed in v2.0.
+
 ```
-/claude-forge node --preset production
+/claude-forge node --preset production-aws
+/claude-forge node --preset production-gcp
 ```
 
 ### MVP Preset
@@ -98,12 +115,20 @@ Presets are orthogonal to stacks — stack = technology, preset = architecture. 
 - No Terraform, no Docker in production — platform-managed infra
 - Docker Compose for local dev (Postgres + Redis)
 
-### Production Preset
+### Production-AWS Preset
 - Domain-driven boundaries with clear API contracts
 - Terraform modules: VPC (public/private subnets, NAT), RDS Postgres (encrypted, Secrets Manager, multi-AZ), ECS Fargate (ALB, ECR with scan-on-push, circuit breaker rollback)
 - Multi-stage Dockerfile (non-root, healthcheck)
 - Docker Compose with LocalStack for AWS emulation
 - GitHub Actions: CI (lint + test + Trivy SAST + Docker image scan) + Deploy (ECR push + ECS rolling deploy)
+
+### Production-GCP Preset
+- Domain-driven boundaries with clear API contracts
+- Terraform modules: custom VPC (Cloud NAT, Serverless VPC Access connector), Cloud SQL Postgres (private IP, PITR, IAM auth), Cloud Run (per-service SA, Secret Manager integration)
+- Multi-stage Dockerfile respecting `$PORT` (Cloud Run convention)
+- Docker Compose (Postgres + Redis) for local dev parity
+- GitHub Actions: CI (lint + test + Trivy SAST + `terraform validate`) + Deploy (Artifact Registry + Cloud Run via **Workload Identity Federation** — no long-lived service-account keys)
+- API enablement + random password + Secret Manager plumbing wired from day one
 
 ---
 
@@ -132,20 +157,34 @@ Plus the existing safety hooks:
 
 Choose one:
 
-### One-liner *(recommended)*
+### One-liner — pinned *(recommended)*
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.0/install.sh | CLAUDE_FORGE_REF=v1.2.0 bash
+```
+
+Pinning to a tagged release gives reproducible installs and isolates you from breaking changes on `main`. See [CHANGELOG.md](./CHANGELOG.md) for releases.
+
+### One-liner — rolling *(latest on main)*
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
 ```
 
+### Pin via flag
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash -s -- --ref v1.2.0
+```
+
 ### Manual download (no git required)
 
 ```bash
-curl -sL https://github.com/brunobracaioli/claude-forge/archive/main.tar.gz | tar xz -C /tmp
+curl -sL https://github.com/brunobracaioli/claude-forge/archive/v1.2.0.tar.gz | tar xz -C /tmp
 mkdir -p ~/.claude/skills/claude-forge
-cp -r /tmp/claude-forge-main/{SKILL.md,scripts,templates,stacks,presets} ~/.claude/skills/claude-forge/
+cp -r /tmp/claude-forge-1.2.0/{SKILL.md,scripts,templates,stacks,presets,VERSION,CHANGELOG.md,plugin.json} ~/.claude/skills/claude-forge/
 chmod +x ~/.claude/skills/claude-forge/scripts/*.sh
-rm -rf /tmp/claude-forge-main
+rm -rf /tmp/claude-forge-1.2.0
 ```
 
 ### Claude Code Plugin
@@ -428,22 +467,34 @@ These templates follow [official Anthropic best practices](https://code.claude.c
 <details>
 <summary><strong>Missing agents/skills after update</strong></summary>
 
-If you update Claude Forge and re-run `/claude-forge`, new templates won't appear because `safe_copy` never overwrites existing files. To pick up new agents (or any new templates):
+Re-installed the skill and want new templates in an existing project? Use `--update`. It refreshes every file whose local hash still matches what was shipped, and writes `<file>.new` alongside anything you tweaked — so you never lose work:
 
 ```bash
-# Re-install the skill (re-run the installer)
-curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/main/install.sh | bash
+# 1. Re-install the skill at the new version
+curl -fsSL https://raw.githubusercontent.com/brunobracaioli/claude-forge/v1.2.0/install.sh | CLAUDE_FORGE_REF=v1.2.0 bash
 
-# Remove the old directories so the new templates are copied
-rm -rf your-project/.claude/agents/
-rm -rf your-project/.claude/hooks/
-rm -rf your-project/.claude/skills/
-
-# Re-run inside Claude Code
-/claude-forge react --preset mvp
+# 2. Re-run in your project
+/claude-forge react --preset mvp --update
 ```
 
-The same applies to any new template files (rules, skills, hooks).
+For files you've customized, review the `.new` sidecars and merge manually (e.g. `diff .claude/rules/code-style.md{,.new}`). Delete the sidecar once you're done.
+
+</details>
+
+<details>
+<summary><strong>Installing all 15 agents instead of the 5-core default</strong></summary>
+
+Version 1.1+ ships only 5 core agents by default (matches the "start with 3-5 teammates" guideline). To get all 15:
+
+```
+/claude-forge react --preset mvp --tier full
+```
+
+Or only a subset later — the extended agents are shipped to the skill directory; you can copy any of them manually:
+
+```bash
+cp ~/.claude/skills/claude-forge/templates/agents/ux-designer.md .claude/agents/
+```
 
 </details>
 

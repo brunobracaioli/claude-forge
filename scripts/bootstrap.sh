@@ -1,20 +1,74 @@
 #!/usr/bin/env bash
 # =============================================================================
 # project-bootstrap: Scaffold .claude/ directory structure
-# Usage: bootstrap.sh <project_root> [stack] [preset]
-# Stacks: flask-next | node | python | react | rust | generic
-# Presets: mvp | production | none (default: none)
+#
+# Usage:
+#   bootstrap.sh <project_root> [stack] [preset] [--tier core|full] [--update]
+#
+# Stacks:   flask-next | node | python | react | rust | generic | auto
+# Presets:  mvp | production | none (default: none)
+# Tiers:    core (5 agents, default) | full (all 15)
+# --update: re-run on an existing project; unmodified templates are refreshed,
+#           modified files are preserved and the new version is written as
+#           <file>.new alongside. Non-destructive by default.
 # =============================================================================
 set -euo pipefail
 
-PROJECT_ROOT="${1:-.}"
-STACK="${2:-generic}"
-PRESET="${3:-none}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "$SCRIPT_DIR")"
 TEMPLATE_DIR="$SKILL_DIR/templates"
+
+# --- Parse args (mix of positional and flags) ---
+POS=()
+UPDATE_MODE=0
+AGENT_TIER="core"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --update)    UPDATE_MODE=1; shift ;;
+    --tier)      AGENT_TIER="${2:?--tier requires core|full}"; shift 2 ;;
+    --tier=*)    AGENT_TIER="${1#--tier=}"; shift ;;
+    --preset)    POS+=("__preset:$2"); shift 2 ;;
+    --preset=*)  POS+=("__preset:${1#--preset=}"); shift ;;
+    --)          shift; while [ $# -gt 0 ]; do POS+=("$1"); shift; done ;;
+    -*)          echo "[bootstrap] Unknown flag: $1" >&2; shift ;;
+    *)           POS+=("$1"); shift ;;
+  esac
+done
+
+# Separate positional args from --preset overrides
+PROJECT_ROOT="."
+STACK="generic"
+PRESET="none"
+POS_INDEX=0
+if [ "${#POS[@]}" -gt 0 ]; then
+  for arg in "${POS[@]}"; do
+    case "$arg" in
+      __preset:*) PRESET="${arg#__preset:}" ;;
+      *)
+        case "$POS_INDEX" in
+          0) PROJECT_ROOT="$arg" ;;
+          1) STACK="$arg" ;;
+          2) PRESET="$arg" ;;
+        esac
+        POS_INDEX=$((POS_INDEX + 1))
+        ;;
+    esac
+  done
+fi
+
+# Validate tier
+case "$AGENT_TIER" in
+  core|full) : ;;
+  *) echo "[bootstrap] Invalid --tier '$AGENT_TIER' (expected: core|full). Using 'core'." >&2; AGENT_TIER="core" ;;
+esac
+
 STACK_DIR="$SKILL_DIR/stacks/$STACK"
 PRESET_DIR="$SKILL_DIR/presets/$PRESET"
+
+# Read forge version if shipped
+FORGE_VERSION="unknown"
+[ -f "$SKILL_DIR/VERSION" ] && FORGE_VERSION=$(tr -d '[:space:]' < "$SKILL_DIR/VERSION")
 
 # --- Colors ---
 GREEN='\033[0;32m'
@@ -31,7 +85,14 @@ bold() { echo -e "${BOLD}$1${NC}"; }
 # --- Auto-detect stack if generic ---
 auto_detect_stack() {
   local root="$1"
-  if [ -f "$root/next.config.js" ] || [ -f "$root/next.config.ts" ] || [ -f "$root/next.config.mjs" ]; then
+  # Framework-specific markers take precedence over generic language markers
+  if [ -f "$root/artisan" ]; then
+    echo "laravel"
+  elif [ -f "$root/manage.py" ]; then
+    echo "django"
+  elif [ -f "$root/go.mod" ]; then
+    echo "go"
+  elif [ -f "$root/next.config.js" ] || [ -f "$root/next.config.ts" ] || [ -f "$root/next.config.mjs" ]; then
     if [ -f "$root/requirements.txt" ] || [ -f "$root/pyproject.toml" ] || [ -d "$root/backend" ]; then
       echo "flask-next"
     else
@@ -55,7 +116,7 @@ if [ "$STACK" = "auto" ] || [ "$STACK" = "detect" ]; then
 fi
 
 # Validate stack
-VALID_STACKS="flask-next node python react rust generic"
+VALID_STACKS="flask-next node python react rust django go laravel generic"
 if ! echo "$VALID_STACKS" | grep -qw "$STACK"; then
   warn "Unknown stack '$STACK'. Using 'generic'."
   STACK="generic"
@@ -63,18 +124,57 @@ fi
 
 STACK_DIR="$SKILL_DIR/stacks/$STACK"
 
+# Alias legacy preset name (pre-1.2). Remove in v2.0.
+if [ "$PRESET" = "production" ]; then
+  warn "Preset 'production' is a deprecated alias for 'production-aws'. Update your invocation."
+  PRESET="production-aws"
+fi
+
 # Validate preset
-VALID_PRESETS="mvp production none"
+VALID_PRESETS="mvp production-aws production-gcp none"
 if ! echo "$VALID_PRESETS" | grep -qw "$PRESET"; then
   warn "Unknown preset '$PRESET'. Using 'none'."
   PRESET="none"
 fi
 PRESET_DIR="$SKILL_DIR/presets/$PRESET"
 
-# --- Safe copy: never overwrite ---
+# --- Hash helpers for --update mode ---
+compute_sha256() {
+  local f="$1"
+  if command -v sha256sum &>/dev/null; then
+    printf 'sha256:%s' "$(sha256sum "$f" | awk '{print $1}')"
+  elif command -v shasum &>/dev/null; then
+    printf 'sha256:%s' "$(shasum -a 256 "$f" | awk '{print $1}')"
+  fi
+}
+
+shipped_hash() {
+  local rel="$1"
+  [ -f "$SKILL_DIR/manifest.json" ] || return 1
+  command -v jq &>/dev/null || return 1
+  jq -r --arg k "$rel" '.files[$k] // empty' "$SKILL_DIR/manifest.json"
+}
+
+# --- Safe copy: never overwrite unless --update + hash matches shipped ---
 safe_copy() {
   local src="$1" dst="$2"
   if [ -f "$dst" ]; then
+    if [ "$UPDATE_MODE" = "1" ]; then
+      local rel="${src#$SKILL_DIR/}"
+      # Defensive: collapse any accidental double slashes from caller
+      rel="${rel//\/\//\/}"
+      local ship local_h
+      ship=$(shipped_hash "$rel" 2>/dev/null || true)
+      local_h=$(compute_sha256 "$dst" 2>/dev/null || true)
+      if [ -n "$ship" ] && [ -n "$local_h" ] && [ "$ship" = "$local_h" ]; then
+        cp "$src" "$dst"
+        log "Updated (unmodified): $dst"
+        return 0
+      fi
+      cp "$src" "$dst.new"
+      warn "Preserved local + wrote sidecar: $dst.new"
+      return 0
+    fi
     warn "SKIP (exists): $dst"
     return 1
   else
@@ -101,9 +201,12 @@ copy_dir() {
 echo ""
 bold "╔══════════════════════════════════════════════════════╗"
 bold "║     Claude Code Project Bootstrap                   ║"
-bold "║     Stack: $STACK$(printf '%*s' $((36 - ${#STACK})) '')║"
-bold "║     Preset: $PRESET$(printf '%*s' $((35 - ${#PRESET})) '')║"
 bold "╚══════════════════════════════════════════════════════╝"
+info "Version: v$FORGE_VERSION"
+info "Stack:   $STACK"
+info "Preset:  $PRESET"
+info "Agents:  $AGENT_TIER tier"
+[ "$UPDATE_MODE" = "1" ] && info "Mode:    update (non-destructive)"
 echo ""
 
 # --- Create directory structure ---
@@ -122,13 +225,32 @@ copy_dir "$TEMPLATE_DIR/rules" "$PROJECT_ROOT/.claude/rules"
 for skill_dir in "$TEMPLATE_DIR/skills"/*/; do
   [ -d "$skill_dir" ] || continue
   skill_name=$(basename "$skill_dir")
-  if [ -f "$skill_dir/SKILL.md" ]; then
-    safe_copy "$skill_dir/SKILL.md" "$PROJECT_ROOT/.claude/skills/$skill_name/SKILL.md"
+  # Strip trailing slash to avoid "commit//SKILL.md" breaking manifest lookups
+  skill_dir_norm="${skill_dir%/}"
+  if [ -f "$skill_dir_norm/SKILL.md" ]; then
+    safe_copy "$skill_dir_norm/SKILL.md" "$PROJECT_ROOT/.claude/skills/$skill_name/SKILL.md"
   fi
 done
 
-# Agents
-copy_dir "$TEMPLATE_DIR/agents" "$PROJECT_ROOT/.claude/agents"
+# Agents — gated by tier (core = 5 default, full = all 15)
+AGENTS_DIR="$TEMPLATE_DIR/agents"
+TIERS_FILE="$AGENTS_DIR/TIERS.json"
+if [ "$AGENT_TIER" = "full" ]; then
+  # Copy every .md agent (skip TIERS.json manifest)
+  copy_dir "$AGENTS_DIR" "$PROJECT_ROOT/.claude/agents" "*.md"
+  log "Installed full agent tier (all agents)"
+elif [ -f "$TIERS_FILE" ] && command -v jq &>/dev/null; then
+  CORE_COUNT=$(jq -r '.core | length' "$TIERS_FILE")
+  log "Installing core agent tier ($CORE_COUNT agents). Use --tier full for all."
+  while IFS= read -r agent; do
+    [ -z "$agent" ] && continue
+    [ -f "$AGENTS_DIR/${agent}.md" ] || { warn "TIERS.json references missing agent: ${agent}.md"; continue; }
+    safe_copy "$AGENTS_DIR/${agent}.md" "$PROJECT_ROOT/.claude/agents/${agent}.md" || true
+  done < <(jq -r '.core[]' "$TIERS_FILE")
+else
+  warn "TIERS.json missing or jq unavailable — falling back to full agent install"
+  copy_dir "$AGENTS_DIR" "$PROJECT_ROOT/.claude/agents" "*.md"
+fi
 
 # Hooks
 copy_dir "$TEMPLATE_DIR/hooks" "$PROJECT_ROOT/.claude/hooks"
@@ -289,13 +411,21 @@ echo "  Requires: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=\"1\" in settings.json"
 echo "  Agents: orchestrator, api-developer, frontend-developer + reviewers"
 echo ""
 
-if [ "$PRESET" = "production" ]; then
-  bold "Infrastructure as Code (Production preset):"
+if [ "$PRESET" = "production-aws" ]; then
+  bold "Infrastructure as Code (AWS production preset):"
   echo "  terraform/              — VPC + RDS + ECS Fargate (modular)"
   echo "  Dockerfile              — Multi-stage build, non-root, healthcheck"
   echo "  docker-compose.yml      — Local dev with Postgres + Redis + LocalStack"
   echo "  .github/workflows/ci.yml    — Lint + test + SAST + Docker build"
   echo "  .github/workflows/deploy.yml — ECR push + ECS deploy on merge"
+  echo ""
+elif [ "$PRESET" = "production-gcp" ]; then
+  bold "Infrastructure as Code (GCP production preset):"
+  echo "  terraform/              — VPC + Cloud SQL + Cloud Run (modular)"
+  echo "  Dockerfile              — Multi-stage build, non-root, healthcheck"
+  echo "  docker-compose.yml      — Local dev with Postgres + Redis"
+  echo "  .github/workflows/ci.yml    — Lint + test + SAST + Docker build"
+  echo "  .github/workflows/deploy.yml — Cloud Build + Cloud Run deploy (WIF, no keys)"
   echo ""
 elif [ "$PRESET" = "mvp" ]; then
   bold "Infrastructure (MVP preset):"

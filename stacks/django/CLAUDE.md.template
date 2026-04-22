@@ -1,0 +1,64 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+python manage.py runserver            # Dev server
+python manage.py test                 # Run tests
+python manage.py makemigrations       # Generate migrations
+python manage.py makemigrations --check  # CI: fail if model drift
+python manage.py migrate              # Apply migrations
+python manage.py createsuperuser      # Seed admin user
+python manage.py collectstatic        # Production static assets
+python -m pytest                      # If using pytest-django
+python -m ruff check .                # Lint
+python -m ruff format .               # Format
+python -m mypy .                      # Type check
+```
+
+## Architecture
+
+- **Language**: Python 3.11+
+- **Framework**: Django 5.x (LTS when available)
+- **Database**: PostgreSQL via Django ORM
+- **Tasks**: [CUSTOMIZE] Celery + Redis / Django-Q / none
+- **Package manager**: [CUSTOMIZE] pip / poetry / uv
+- **Tests**: pytest-django + factory_boy
+
+## Project Structure
+
+```
+[CUSTOMIZE]
+project/
+├── apps/
+│   ├── <domain>/
+│   │   ├── models.py         # ORM models
+│   │   ├── views.py          # thin — delegate to services
+│   │   ├── services.py       # business logic lives here
+│   │   ├── serializers.py    # DRF
+│   │   ├── urls.py
+│   │   └── tests/
+├── config/
+│   ├── settings/{base,dev,prod}.py
+│   └── urls.py
+└── manage.py
+```
+
+## Conventions
+
+- Services layer for business logic — views call services, never ORM directly
+- Mass-assignment guard: always use `fields = [...]` on ModelForm / Serializer; never `fields = "__all__"`
+- `SECRET_KEY`, `DATABASE_URL` from env — never committed
+- `DEBUG = False` in prod; `ALLOWED_HOSTS` set explicitly
+- `SECURE_*` headers (HSTS, SSL redirect, CSRF cookie) enabled in prod
+- ORM: `select_related`/`prefetch_related` to avoid N+1; audit with `django-debug-toolbar` in dev
+- Signals used sparingly — prefer explicit service calls for auditability
+- Migrations reviewed in PRs; never `--fake` in shared environments
+
+## Important
+
+- [CUSTOMIZE] Virtual env setup
+- [CUSTOMIZE] `.env` structure (copy from `.env.example`)
+- Run `makemigrations --check` in CI so model changes without migrations fail the build

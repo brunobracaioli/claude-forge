@@ -1,0 +1,3 @@
+#!/usr/bin/env php
+<?php
+// Fixture marker for auto-detect tests. Not a real Laravel app.

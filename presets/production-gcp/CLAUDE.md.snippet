@@ -1,0 +1,15 @@
+## Architecture (GCP Production Preset)
+
+Multi-service architecture on Google Cloud with Infrastructure as Code and security hardening.
+
+- **Deploy target**: GCP with Terraform-managed infra (state in GCS backend)
+- **Compute**: Cloud Run (fully managed, scale-to-zero by default)
+- **Database**: Cloud SQL Postgres — each service owns its data; PITR enabled
+- **Auth**: Firebase Auth / Identity Platform / Auth0 (managed auth)
+- **Secrets**: Secret Manager; `roles/secretmanager.secretAccessor` bound to service account
+- **CI/CD**: Cloud Build + Cloud Run deploy via Workload Identity Federation (NO long-lived JSON keys)
+- **IaC**: all infra in `terraform/`, state in GCS backend with object versioning on
+- **Security**: VPC Service Controls, least-privilege per-service service accounts, Cloud Armor on ingress, CMEK where data is sensitive
+- **Observability**: structured JSON logs → Cloud Logging, Cloud Trace, `/health` + `/ready` on every service
+
+See `.claude/rules/architecture.md` for full guidelines.

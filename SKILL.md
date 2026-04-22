@@ -9,10 +9,12 @@ description: >
   variation asking to set up Claude Code configuration for a new or existing codebase.
   Also trigger when the user asks to "create CLAUDE.md template", "setup skills", or
   wants a replicable project skeleton. Supports stack-specific variants including
-  flask-next, node, python, react, and rust. Supports architecture presets: mvp
-  (monolith, Supabase+Vercel) or production (multi-service, Terraform, AWS/GCP).
+  django, flask-next, go, laravel, node, python, react, and rust. Supports
+  architecture presets: mvp (monolith, Supabase+Vercel), production-aws
+  (multi-service, Terraform, AWS: VPC + RDS + ECS Fargate), or production-gcp
+  (multi-service, Terraform, GCP: VPC + Cloud SQL + Cloud Run, WIF-based CI/CD).
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-argument-hint: "[stack] [--preset mvp|production]"
+argument-hint: "[stack] [--preset mvp|production-aws|production-gcp] [--tier core|full] [--update]"
 ---
 
 # Claude Forge — Project Bootstrap
@@ -39,8 +41,13 @@ Scaffold a complete `.claude/` directory with production-ready templates, securi
 | `/infra-audit` | Terraform, Docker, CI/CD configuration review |
 | `/pentest-recon` | Passive attack surface mapping from codebase |
 
-### Agents (15 total)
-code-reviewer, debugger, test-writer, refactorer, doc-writer, security-auditor, orchestrator, api-developer, frontend-developer, ux-designer, frontend-design, web-researcher, codebase-navigator, project-planner, spec-writer
+### Agents (tiered — 5 core by default, 15 total)
+
+**Core tier** (installed by default, satisfies the "start with 3-5 teammates" guideline):
+code-reviewer, debugger, test-writer, security-auditor, orchestrator
+
+**Extended tier** (install with `--tier full`):
+api-developer, codebase-navigator, doc-writer, frontend-design, frontend-developer, project-planner, refactorer, spec-writer, ux-designer, web-researcher
 
 ### Hooks (7 total)
 | Hook | Trigger | Action |
@@ -57,7 +64,9 @@ code-reviewer, debugger, test-writer, refactorer, doc-writer, security-auditor, 
 | Preset | What it adds |
 |--------|-------------|
 | **mvp** | Monolith rules, docker-compose (Postgres+Redis), GitHub Actions CI |
-| **production** | Multi-service rules, Terraform (VPC+RDS+ECS Fargate), Dockerfile (multi-stage), docker-compose (Postgres+Redis+LocalStack), GitHub Actions CI+Deploy pipeline |
+| **production-aws** | Multi-service rules, Terraform (VPC + RDS + ECS Fargate), multi-stage Dockerfile, docker-compose (Postgres+Redis+LocalStack), GitHub Actions CI + ECR/ECS deploy pipeline |
+| **production-gcp** | Multi-service rules, Terraform (VPC + Cloud SQL + Cloud Run, WIF-ready), multi-stage Dockerfile, docker-compose (Postgres+Redis), GitHub Actions CI + Cloud Run deploy via Workload Identity Federation (no JSON keys) |
+| **production** | Deprecated alias for `production-aws` — will be removed in v2.0 |
 
 ## Workflow
 
@@ -68,29 +77,40 @@ If the user provided a stack argument (e.g., `/claude-forge react`), use it.
 Otherwise, scan the current directory for clues:
 
 ```
-package.json + next.config.*       → react (or node if no next)
-requirements.txt / pyproject.toml  → python
-manage.py + package.json           → flask-next (or django variant)
-Cargo.toml                         → rust
-go.mod                             → generic (go not yet templated)
+artisan                                      → laravel
+manage.py                                    → django
+go.mod                                       → go
+next.config.* + requirements.txt/pyproject  → flask-next
+next.config.*                                → react
+package.json                                 → node
+Cargo.toml                                   → rust
+requirements.txt / pyproject.toml / setup.py → python
+(nothing matches)                            → generic
 ```
 
 If detection is ambiguous, ask ONE question:
 
-> What's the primary stack? Options: flask-next, node, python, react, rust, generic
+> What's the primary stack? Options: django, flask-next, go, laravel, node, python, react, rust, generic
 
 ### Step 2: Detect or Ask for Preset
 
-If the user specified `--preset mvp` or `--preset production`, use it.
+If the user specified `--preset <name>`, use it.
 
 Otherwise, ask ONE question:
 
-> Do you want an architecture preset? Options: mvp (monolith, Supabase+Vercel), production (multi-service, Terraform, AWS/GCP), or none (skip)
+> Do you want an architecture preset? Options: mvp (monolith, Supabase+Vercel), production-aws (Terraform + ECS Fargate + RDS), production-gcp (Terraform + Cloud Run + Cloud SQL, WIF-based CI), or none (skip)
 
 ### Step 3: Run the Bootstrap Script
 
 ```bash
+# First install (default core agent tier):
 bash "${CLAUDE_SKILL_DIR}/scripts/bootstrap.sh" "$(pwd)" "<stack>" "<preset>"
+
+# Install all 15 agents:
+bash "${CLAUDE_SKILL_DIR}/scripts/bootstrap.sh" "$(pwd)" "<stack>" "<preset>" --tier full
+
+# Re-run after claude-forge update to refresh unmodified templates:
+bash "${CLAUDE_SKILL_DIR}/scripts/bootstrap.sh" "$(pwd)" "<stack>" "<preset>" --update
 ```
 
 The script:
@@ -100,7 +120,8 @@ The script:
 4. Applies architecture preset from `presets/<preset>/` (rules, settings, IaC templates)
 5. Appends preset architecture snippet to CLAUDE.md
 6. Generates the `.claude/.gitignore` and updates root `.gitignore`
-7. Never overwrites existing files (safe to re-run)
+7. Never overwrites existing files unless `--update` is passed AND the file hash matches the shipped version
+8. In `--update` mode, files modified locally are preserved and the new version is written as `<file>.new` alongside
 
 ### Step 4: Generate CLAUDE.md
 
@@ -146,7 +167,7 @@ Show the user:
 - **Security by default** — hooks block secrets and flag vulnerabilities automatically
 - **Deterministic safety** — hooks block dangerous commands 100% of the time
 - **Git-friendly** — personal files are gitignored, team files are committed
-- **Non-destructive** — never overwrites existing files, safe to re-run
+- **Non-destructive by default** — never overwrites existing files; `--update` refreshes only unmodified templates (hash-matched against `manifest.json`) and writes new versions as `.new` sidecars otherwise
 - **Stack + Preset** — orthogonal dimensions: stack = technology, preset = architecture
 
 ## Reference Files

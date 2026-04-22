@@ -1,0 +1,61 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+go build ./...                       # Build all packages
+go test ./... -race -cover           # Run tests with race detector + coverage
+go test -run TestName ./pkg/...      # Run a single test
+go vet ./...                         # Static checks
+golangci-lint run                    # Linter aggregator
+go mod tidy                          # Sync go.mod / go.sum
+go mod verify                        # Verify module integrity
+go run ./cmd/server                  # Dev server
+go generate ./...                    # Run code generators
+```
+
+## Architecture
+
+- **Language**: Go 1.22+
+- **Framework**: [CUSTOMIZE] stdlib net/http / chi / echo / gin
+- **Database**: [CUSTOMIZE] PostgreSQL via pgx / database/sql
+- **Testing**: `testing` stdlib + `testify/assert` for ergonomics
+- **Logging**: `log/slog` (stdlib structured logging)
+- **Linter**: golangci-lint (gofmt, govet, staticcheck, errcheck, ineffassign)
+
+## Project Structure
+
+```
+[CUSTOMIZE]
+.
+├── cmd/
+│   └── server/main.go           # thin entrypoint
+├── internal/                     # private app code (not importable by others)
+│   ├── http/                    # handlers, middleware
+│   ├── service/                 # business logic
+│   ├── repository/              # data access
+│   └── domain/                  # types + interfaces
+├── pkg/                          # reusable libs (rare — prefer internal/)
+├── go.mod
+└── go.sum
+```
+
+## Conventions
+
+- Exported identifiers have comments starting with the identifier name
+- Return errors with context: `fmt.Errorf("operation failed: %w", err)` — always wrap
+- `context.Context` is the first parameter when an operation can be cancelled
+- No `init()` side effects; construct dependencies explicitly in `main`
+- Interfaces defined where they're consumed (not beside their implementations)
+- Errors are values — use `errors.Is` / `errors.As`, never string comparison
+- No global mutable state; pass dependencies via struct fields
+- Accept interfaces, return structs
+
+## Important
+
+- [CUSTOMIZE] Module path conventions (e.g. `github.com/org/project`)
+- Run `go test ./... -race` in CI — race detector catches concurrency bugs
+- `go mod tidy` in CI validates there are no spurious deps
+- Goroutines that outlive request scope need explicit lifecycle management (context + sync.WaitGroup)

@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Release ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install jq
+        run: sudo apt-get update -qq && sudo apt-get install -y jq
+
+      - name: Verify VERSION matches tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          file=$(tr -d '[:space:]' < VERSION)
+          if [ "$tag" != "$file" ]; then
+            echo "Tag ($tag) and VERSION file ($file) disagree." >&2
+            exit 1
+          fi
+
+      - name: Verify plugin.json version matches tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          plugin=$(jq -r '.version' plugin.json)
+          if [ "$tag" != "$plugin" ]; then
+            echo "Tag ($tag) and plugin.json version ($plugin) disagree." >&2
+            exit 1
+          fi
+
+      - name: Verify CHANGELOG entry exists for this release
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          if ! grep -q "^## \[${tag}\]" CHANGELOG.md; then
+            echo "CHANGELOG.md is missing a '## [${tag}]' section." >&2
+            echo "Add one before tagging." >&2
+            exit 1
+          fi
+
+      - name: Generate manifest.json
+        run: bash scripts/gen_manifest.sh
+
+      - name: Extract release notes
+        id: notes
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          awk -v tag="$tag" '
+            $0 ~ "^## \\["tag"\\]" { capturing = 1; next }
+            capturing && /^## \[/ { exit }
+            capturing { print }
+          ' CHANGELOG.md > release_notes.md
+          echo "Release notes:"
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: release_notes.md
+          files: |
+            manifest.json
+            VERSION
+            CHANGELOG.md
+          draft: false
+          prerelease: false

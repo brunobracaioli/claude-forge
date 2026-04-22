@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(terraform *)",
+      "Bash(terraform init *)",
+      "Bash(terraform plan *)",
+      "Bash(terraform validate *)",
+      "Bash(terraform fmt *)",
+      "Bash(gcloud auth list*)",
+      "Bash(gcloud config *)",
+      "Bash(gcloud projects *)",
+      "Bash(gcloud run services list*)",
+      "Bash(gcloud run services describe *)",
+      "Bash(gcloud sql instances list*)",
+      "Bash(gcloud sql instances describe *)",
+      "Bash(gcloud logging read *)",
+      "Bash(gcloud secrets list*)",
+      "Bash(gcloud artifacts *)",
+      "Bash(gcloud builds list*)",
+      "Bash(gcloud iam roles list*)",
+      "Bash(docker build *)",
+      "Bash(docker compose *)",
+      "Bash(docker-compose *)",
+      "Bash(docker ps *)",
+      "Bash(docker logs *)",
+      "Bash(docker images *)",
+      "Bash(trivy *)",
+      "Bash(grype *)"
+    ],
+    "deny": [
+      "Bash(terraform apply *)",
+      "Bash(terraform destroy *)",
+      "Bash(docker push *)",
+      "Bash(docker rm -f *)",
+      "Bash(gcloud auth application-default login*)",
+      "Bash(gcloud iam service-accounts keys create*)",
+      "Bash(gcloud projects delete*)",
+      "Bash(gcloud sql instances delete*)"
+    ]
+  }
+}

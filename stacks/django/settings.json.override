@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py *)",
+      "Bash(python -m pytest *)",
+      "Bash(python -m ruff *)",
+      "Bash(python -m mypy *)",
+      "Bash(python -m django *)",
+      "Bash(pytest *)",
+      "Bash(ruff *)",
+      "Bash(mypy *)",
+      "Bash(pip install *)",
+      "Bash(poetry *)",
+      "Bash(uv *)",
+      "Bash(gunicorn *)",
+      "Bash(daphne *)",
+      "Bash(celery *)",
+      "Bash(django-admin *)"
+    ],
+    "deny": [
+      "Bash(python manage.py migrate --fake*)",
+      "Bash(python manage.py flush*)",
+      "Bash(python manage.py sqlflush*)"
+    ]
+  }
+}

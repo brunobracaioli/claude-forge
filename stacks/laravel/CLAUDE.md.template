@@ -1,0 +1,77 @@
+# [PROJECT_NAME]
+
+> [CUSTOMIZE] One-line description.
+
+## Commands
+
+```bash
+php artisan serve                       # Dev server
+php artisan test                        # Run tests (Pest or PHPUnit)
+php artisan test --parallel             # Parallel suite
+php artisan migrate                     # Apply migrations
+php artisan migrate:fresh --seed        # Dev DB reset (NEVER in prod)
+php artisan migrate:status              # Show pending migrations
+php artisan make:model User -mfc        # Model + migration + factory + controller
+php artisan route:list                  # Enumerate registered routes
+php artisan config:cache                # Production config cache
+php artisan view:cache                  # Production view cache
+composer install --no-dev --optimize-autoloader  # Production deps
+composer test                           # [CUSTOMIZE] scripts.test
+./vendor/bin/pint                       # Laravel Pint formatter
+./vendor/bin/phpstan analyse            # Static analysis
+```
+
+## Architecture
+
+- **Language**: PHP 8.3+
+- **Framework**: Laravel 11.x
+- **Database**: PostgreSQL or MySQL via Eloquent
+- **Tests**: Pest (or PHPUnit) + database transactions
+- **Queue**: [CUSTOMIZE] redis / database / sqs
+- **Formatter**: Laravel Pint
+- **Static analysis**: PHPStan / Larastan
+
+## Project Structure
+
+```
+[CUSTOMIZE]
+app/
+├── Http/
+│   ├── Controllers/           # thin — validate + delegate to services
+│   ├── Middleware/
+│   └── Requests/              # FormRequest for validation + authorization
+├── Models/                     # Eloquent models (keep lean)
+├── Services/                   # business logic
+├── Actions/                    # single-purpose invokable classes
+├── Policies/                   # authorization
+└── Providers/
+database/
+├── migrations/
+├── factories/
+└── seeders/
+routes/
+├── web.php
+├── api.php
+└── console.php
+tests/
+├── Feature/                    # end-to-end through the HTTP kernel
+└── Unit/
+```
+
+## Conventions
+
+- Controllers → FormRequest (validates + authorizes) → Service/Action → response
+- Mass-assignment guarded: always set `$fillable` explicitly (never rely on `$guarded = []`)
+- Eloquent relationships typed with return types (Laravel 10+); avoid N+1 via `->with(...)`
+- `config()` reads only in bootstrap; runtime code receives injected config
+- Secrets via `.env` → `config()`; never `env()` in runtime code (breaks `config:cache`)
+- Jobs are idempotent — retries must not double-charge, double-email, double-write
+- Policies for authorization; `$this->authorize('update', $model)` in controllers
+
+## Important
+
+- [CUSTOMIZE] `.env.example` structure; PHP version via `php -v`
+- Run `php artisan config:cache && php artisan route:cache && php artisan view:cache` in prod deploy
+- NEVER `migrate:fresh` or `db:wipe` against production
+- `APP_DEBUG=false` and `APP_ENV=production` are mandatory in prod
+- CSRF tokens on all non-GET HTML forms; Sanctum/Passport for API auth

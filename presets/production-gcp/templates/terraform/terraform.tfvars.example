@@ -1,0 +1,11 @@
+# Copy to terraform.tfvars (gitignored) and fill in real values.
+# Never commit terraform.tfvars — only this example.
+
+project_name = "myapp"
+environment  = "dev"
+gcp_project  = "myapp-dev"
+gcp_region   = "us-central1"
+
+# Set after pushing the first image to Artifact Registry
+container_image = "us-central1-docker.pkg.dev/myapp-dev/myapp/api:latest"
+container_port  = 8080

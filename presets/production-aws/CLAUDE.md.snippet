@@ -1,0 +1,15 @@
+## Architecture (AWS Production Preset)
+
+Multi-service architecture on AWS with Infrastructure as Code and security hardening.
+
+- **Deploy target**: AWS with Terraform-managed infra (state in S3 + DynamoDB locking)
+- **Compute**: ECS Fargate (containerized, no managed node pools)
+- **Database**: RDS Postgres — each service owns its data; PITR enabled
+- **Auth**: Cognito / Auth0 / Keycloak (managed auth)
+- **Secrets**: AWS Secrets Manager; never in env vars committed to repo
+- **CI/CD**: lint → type-check → test → SAST → build → deploy (no manual deploys)
+- **IaC**: all infra in `terraform/`, state in S3 backend with DynamoDB locking
+- **Security**: VPC with private subnets, least-privilege IAM, encryption in transit + at rest, WAF on public endpoints
+- **Observability**: structured JSON logs → CloudWatch, OpenTelemetry tracing, `/health` + `/ready` endpoints
+
+See `.claude/rules/architecture.md` for full guidelines.

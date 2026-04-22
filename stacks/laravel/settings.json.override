@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan *)",
+      "Bash(php -v)",
+      "Bash(php -S *)",
+      "Bash(php -m)",
+      "Bash(php vendor/bin/* *)",
+      "Bash(composer install *)",
+      "Bash(composer update *)",
+      "Bash(composer require *)",
+      "Bash(composer remove *)",
+      "Bash(composer test*)",
+      "Bash(composer dump-autoload*)",
+      "Bash(composer audit*)",
+      "Bash(./vendor/bin/pest *)",
+      "Bash(./vendor/bin/phpunit *)",
+      "Bash(./vendor/bin/pint *)",
+      "Bash(./vendor/bin/phpstan *)",
+      "Bash(./vendor/bin/psalm *)"
+    ],
+    "deny": [
+      "Bash(php artisan migrate:fresh*)",
+      "Bash(php artisan db:wipe*)",
+      "Bash(php artisan migrate:reset*)"
+    ]
+  }
+}

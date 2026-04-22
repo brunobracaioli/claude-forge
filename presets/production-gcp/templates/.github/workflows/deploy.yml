@@ -1,0 +1,59 @@
+name: Deploy (Cloud Run via WIF)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Workload Identity Federation — no long-lived service-account keys in secrets
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  # [CUSTOMIZE] These are set once in your infra bootstrap:
+  #   gcloud iam workload-identity-pools create ...
+  #   gcloud iam service-accounts create github-deployer@<project>.iam ...
+  #   gcloud iam service-accounts add-iam-policy-binding ...
+  GCP_PROJECT:         ${{ vars.GCP_PROJECT }}         # e.g. myapp-prd
+  GCP_REGION:          ${{ vars.GCP_REGION }}          # e.g. us-central1
+  AR_REPOSITORY:       ${{ vars.AR_REPOSITORY }}       # Artifact Registry repo name
+  CLOUD_RUN_SERVICE:   ${{ vars.CLOUD_RUN_SERVICE }}   # Cloud Run service name
+  WIF_PROVIDER:        ${{ secrets.WIF_PROVIDER }}     # projects/<num>/locations/global/workloadIdentityPools/<pool>/providers/<provider>
+  DEPLOYER_SA:         ${{ secrets.DEPLOYER_SA }}      # github-deployer@<project>.iam.gserviceaccount.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP via WIF
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOYER_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: |
+          IMAGE="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT }}/${{ env.AR_REPOSITORY }}/${{ env.CLOUD_RUN_SERVICE }}:${{ github.sha }}"
+          docker build -t "$IMAGE" .
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Push image
+        run: docker push "$IMAGE"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "${{ env.CLOUD_RUN_SERVICE }}" \
+            --project="${{ env.GCP_PROJECT }}" \
+            --region="${{ env.GCP_REGION }}" \
+            --image="$IMAGE" \
+            --quiet
